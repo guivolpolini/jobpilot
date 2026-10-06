@@ -138,6 +138,65 @@ async def get_job_matches(job_id: int, db: AsyncSession = Depends(get_db)):
     return result.scalars().all()
 
 
+@router.get("/jobs/{job_id}/resume-pdf")
+async def download_resume_pdf(
+    job_id: int,
+    candidate_id: int = 1,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Gera dinamicamente o PDF customizado do currículo para a vaga e retorna diretamente para download no navegador.
+    """
+    from fastapi.responses import Response
+    from app.services.resume_optimizer import generate_tailored_resume
+    from app.services.pdf_generator import render_resume_to_pdf_bytes
+
+    job = (await db.execute(select(Job).where(Job.id == job_id))).scalar_one_or_none()
+    candidate = (await db.execute(select(CandidateProfile).where(CandidateProfile.id == candidate_id))).scalar_one_or_none()
+
+    if not candidate:
+        candidate = CandidateProfile(
+            id=1,
+            full_name="Guilherme Volpolini",
+            email="guilherme.dev@exemplo.com",
+            phone="(11) 98765-4321",
+            summary="Desenvolvedor com foco em Python, APIs e desenvolvimento de software.",
+            skills=["Python", "FastAPI", "SQL", "Git", "REST APIs"]
+        )
+
+    job_title = job.title if job else "Vaga de Tecnologia"
+    job_desc = job.raw_description if job else "Requisitos da vaga."
+
+    candidate_data = {
+        "full_name": candidate.full_name,
+        "email": candidate.email,
+        "phone": candidate.phone or "",
+        "linkedin_url": candidate.linkedin_url or "",
+        "github_url": candidate.github_url or "",
+        "portfolio_url": candidate.portfolio_url or "",
+        "summary": candidate.summary or "",
+        "skills": candidate.skills or ["Python", "FastAPI", "Git"],
+        "experiences": candidate.experiences or [],
+        "education": candidate.education or [],
+    }
+
+    tailored_resume = generate_tailored_resume(
+        base_profile=candidate_data,
+        job_title=job_title,
+        job_description=job_desc,
+        ats_keywords=["Python", "FastAPI", "Git", "Clean Architecture"]
+    )
+
+    pdf_bytes = await render_resume_to_pdf_bytes(tailored_resume)
+    filename = f"curriculo_ats_job_{job_id}.pdf"
+
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+    )
+
+
 # --- Endpoint de 1 Clique (One-Click Quick Apply Trigger) ---
 @router.get("/apply/{job_id}")
 async def quick_apply_trigger(

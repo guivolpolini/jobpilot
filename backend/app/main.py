@@ -1,3 +1,11 @@
+import os
+import sys
+import asyncio
+
+# Configura o event loop correto para suporte a subprocessos no Windows (Playwright)
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,6 +30,9 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+import os
+from fastapi.staticfiles import StaticFiles
+
 # CORS liberado para o frontend Next.js
 app.add_middleware(
     CORSMiddleware,
@@ -30,6 +41,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Servir uploads locais (PDFs de currículos gerados)
+upload_dir = settings.STORAGE_LOCAL_DIR
+os.makedirs(upload_dir, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=upload_dir), name="uploads")
 
 # Inclusão de rotas
 app.include_router(api_v1_router, prefix=settings.API_V1_PREFIX)

@@ -725,7 +725,7 @@ export default function Dashboard() {
                           Ver Análise
                         </button>
                         <a
-                          href={`http://localhost:8001/api/v1/jobs/${job.id}/matches`}
+                          href={`http://localhost:8001/api/v1/jobs/${job.id}/resume-pdf`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-medium text-white hover:bg-blue-500 transition shadow-sm"
@@ -828,17 +828,17 @@ export default function Dashboard() {
                 </div>
 
                 {/* Currículo Gerado */}
-                {matches[selectedJob.id].tailored_resume_url && (
+                {matches[selectedJob.id] && (
                   <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
                     <p className="text-xs font-semibold text-slate-300">Currículo Customizado para ATS</p>
                     <p className="text-xs text-slate-500 mt-1">Keywords enfatizadas sem alucinação.</p>
                     <a
-                      href={matches[selectedJob.id].tailored_resume_url}
+                      href={`http://localhost:8001/api/v1/jobs/${selectedJob.id}/resume-pdf`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-3 inline-flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2 text-xs font-medium text-white hover:bg-slate-700 transition"
+                      className="mt-3 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-xs font-medium text-white hover:bg-blue-500 shadow-md shadow-blue-500/20 transition"
                     >
-                      <FileText className="h-4 w-4 text-blue-400" />
+                      <FileText className="h-4 w-4 text-white" />
                       Baixar PDF Otimizado
                     </a>
                   </div>
