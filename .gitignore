@@ -5,6 +5,13 @@ env/
 __pycache__/
 *.py[cod]
 *$py.class
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+out/
+build/
+dist/
 
 # Arquivos de ambiente e segredos
 .env
