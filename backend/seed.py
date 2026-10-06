@@ -8,7 +8,7 @@ from app.services.pdf_generator import generate_and_save_tailored_pdf
 
 
 async def seed_database():
-    print("🌱 Criando tabelas no banco de dados...")
+    print("[OK] Criando tabelas no banco de dados...")
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
@@ -18,7 +18,7 @@ async def seed_database():
         candidate = res_profile.scalar_one_or_none()
 
         if not candidate:
-            print("👤 Criando perfil base do candidato...")
+            print("[OK] Criando perfil base do candidato...")
             candidate = CandidateProfile(
                 full_name="Guilherme Volpolini",
                 email="guilherme.dev@exemplo.com",
@@ -95,7 +95,7 @@ async def seed_database():
             job = res_job.scalar_one_or_none()
 
             if not job:
-                print(f"💼 Cadastrando vaga: {j_data['title']} ({j_data['company']})...")
+                print(f"[OK] Cadastrando vaga: {j_data['title']} ({j_data['company']})...")
                 job = Job(**j_data)
                 session.add(job)
                 await session.commit()
@@ -118,7 +118,7 @@ async def seed_database():
                 session.add(match)
                 await session.commit()
 
-        print("✅ Banco de dados populado com sucesso!")
+        print("[OK] Banco de dados populado com sucesso!")
 
 
 if __name__ == "__main__":

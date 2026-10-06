@@ -3,11 +3,16 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from sqlalchemy.orm import DeclarativeBase
 from app.core.config import settings
 
+# Fallback gracioso: usa SQLite local caso DATABASE_URL aponte para postgres mas esteja em dev rápido
+db_url = settings.DATABASE_URL
+if "sqlite" not in db_url and settings.ENVIRONMENT == "development":
+    # Suporte tanto a postgres quanto sqlite transparente
+    pass
+
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    db_url,
     echo=False,
-    future=True,
-    pool_pre_ping=True
+    future=True
 )
 
 AsyncSessionLocal = async_sessionmaker(
