@@ -158,10 +158,13 @@ async def download_resume_pdf(
         candidate = CandidateProfile(
             id=1,
             full_name="Guilherme Volpolini",
-            email="guilherme.dev@exemplo.com",
+            email="guilherme.volpolini@gmail.com",
             phone="(11) 98765-4321",
-            summary="Desenvolvedor com foco em Python, APIs e desenvolvimento de software.",
-            skills=["Python", "FastAPI", "SQL", "Git", "REST APIs"]
+            linkedin_url="https://www.linkedin.com/in/guilherme-volpolini-a60961312/",
+            github_url="https://github.com/guivolpolini",
+            portfolio_url="https://github.com/guivolpolini",
+            summary="Estudante de Ciência da Computação no Instituto Mauá de Tecnologia com foco em Desenvolvimento Back-end (Python/FastAPI, Java) e aplicações com Inteligência Artificial generativa. Desenvolvedor web freelancer com projetos em produção, experiência em modelagem de dados e APIs REST.",
+            skills=["Python", "FastAPI", "Java", "SQLAlchemy", "Pydantic", "MySQL", "PostgreSQL", "Git", "REST APIs", "Docker"]
         )
 
     job_title = job.title if job else "Vaga de Tecnologia"

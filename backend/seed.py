@@ -21,36 +21,54 @@ async def seed_database():
             print("[OK] Criando perfil base do candidato...")
             candidate = CandidateProfile(
                 full_name="Guilherme Volpolini",
-                email="guilherme.dev@exemplo.com",
+                email="guilherme.volpolini@gmail.com",
                 phone="(11) 98765-4321",
-                linkedin_url="https://linkedin.com/in/guilherme",
+                linkedin_url="https://www.linkedin.com/in/guilherme-volpolini-a60961312/",
                 github_url="https://github.com/guivolpolini",
-                portfolio_url="https://github.com/guivolpolini/jobpilot",
-                summary="Desenvolvedor Backend com foco em Python, FastAPI, microsserviços, mensageria com Redis/Celery e modelagem de bancos de dados relacionais.",
+                portfolio_url="https://github.com/guivolpolini",
+                summary="Estudante de Ciência da Computação no Instituto Mauá de Tecnologia com foco em Desenvolvimento Back-end (Python/FastAPI, Java) e aplicações com Inteligência Artificial generativa. Desenvolvedor web freelancer com projetos em produção, experiência em modelagem de dados e APIs REST.",
                 skills=[
-                    "Python", "FastAPI", "PostgreSQL", "SQLAlchemy", 
-                    "Redis", "Celery", "Docker", "Git", "Playwright", "RESTful APIs"
+                    "Python", "FastAPI", "Java", "SQLAlchemy", "Pydantic",
+                    "MySQL", "PostgreSQL", "MongoDB", "APIs REST", "Docker",
+                    "JavaScript", "TypeScript", "React", "Next.js", "Tailwind CSS",
+                    "Git", "GitHub", "pytest", "Google Gemini API", "Linux"
                 ],
                 experiences=[
                     {
-                        "role": "Desenvolvedor Backend (Projetos & Freelance)",
-                        "company": "Projetos Pessoais & Open Source",
-                        "period": "2023 - Presente",
+                        "role": "Desenvolvedor Web Freelance",
+                        "company": "VolpoTech / Autônomo",
+                        "period": "2024 - Presente",
                         "achievements": [
-                            "Desenvolveu arquitetura completa da plataforma JobPilot integrando FastAPI, Celery e PostgreSQL.",
-                            "Implementou pipeline assíncrono de mensageria com Redis para processamento de background jobs.",
-                            "Construiu APIs RESTful estruturadas com Pydantic v2 e validação rigorosa de dados."
+                            "Desenvolve websites e aplicações web responsivas de alta conversão para pequenos negócios e comércio local.",
+                            "Implementa integrações de APIs REST, webhooks e automação de agendamentos (WhatsApp/n8n).",
+                            "Desenvolveu sistemas como SaaS Barbearia (React, Vite, Supabase, n8n) e QR Avalia para automação de reviews no Google."
+                        ]
+                    },
+                    {
+                        "role": "Desenvolvedor de Software (Projetos & Portfólio)",
+                        "company": "GitHub Open Source / Projetos Pessoais",
+                        "period": "2024 - Presente",
+                        "achievements": [
+                            "Assistente de Estudos com IA: Arquitetura backend em FastAPI + SQLAlchemy + Pydantic com integração da API Google Gemini, extração de texto de PDFs e testes com pytest.",
+                            "JobPilot: Plataforma completa de automação de vagas e matching ATS usando FastAPI, Celery, Redis e Playwright headless.",
+                            "E-Commerce Full Stack: API REST completa com FastAPI, MySQL, autenticação JWT e integração com MercadoPago.",
+                            "DigestiveQuest: Jogo educativo em Java com POO e lógica de programação em equipe apoiando o aprendizado de 50 alunos do Colégio Piaget."
                         ]
                     }
                 ],
                 education=[
                     {
-                        "degree": "Análise e Desenvolvimento de Sistemas / Ciência da Computação",
-                        "institution": "Universidade",
-                        "year": "2025"
+                        "degree": "Bacharelado em Ciência da Computação",
+                        "institution": "Instituto Mauá de Tecnologia (IMT)",
+                        "year": "Previsão de conclusão: Dez/2028"
+                    },
+                    {
+                        "degree": "Certificação Java Programmer & CC50 Harvard",
+                        "institution": "Oracle / Fundação Estudar",
+                        "year": "2024 - 2025"
                     }
                 ],
-                languages=[{"language": "Português", "level": "Nativo"}, {"language": "Inglês", "level": "Intermediário/Técnico"}]
+                languages=[{"language": "Português", "level": "Nativo"}, {"language": "Inglês", "level": "Avançado"}]
             )
             session.add(candidate)
             await session.commit()
