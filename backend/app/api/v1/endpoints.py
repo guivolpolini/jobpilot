@@ -183,11 +183,21 @@ async def download_resume_pdf(
         "education": candidate.education or [],
     }
 
+    # Obtém keywords dinâmicas da vaga e match
+    match = (await db.execute(select(JobMatch).where(JobMatch.job_id == job_id, JobMatch.candidate_id == candidate.id))).scalar_one_or_none()
+    dynamic_keywords = []
+    if job and job.extracted_skills:
+        dynamic_keywords.extend(job.extracted_skills)
+    if match and match.matching_skills:
+        dynamic_keywords.extend(match.matching_skills)
+    if not dynamic_keywords:
+        dynamic_keywords = [w for w in (job_title + " " + job_desc).split() if len(w) > 3][:8]
+
     tailored_resume = generate_tailored_resume(
         base_profile=candidate_data,
         job_title=job_title,
         job_description=job_desc,
-        ats_keywords=["Python", "FastAPI", "Git", "Clean Architecture"]
+        ats_keywords=dynamic_keywords
     )
 
     pdf_bytes = await render_resume_to_pdf_bytes(tailored_resume)
