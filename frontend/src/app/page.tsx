@@ -456,10 +456,18 @@ export default function Dashboard() {
                     });
                     const data = await res.json();
                     if (data.jobs && data.jobs.length > 0) {
-                      setJobs((prev) => [...data.jobs, ...prev]);
-                      alert(`Sucesso! ${data.total_novas_salvas} novas vagas coletadas diretamente do LinkedIn.`);
+                      setJobs((prev) => {
+                        const existingIds = new Set(prev.map((j) => j.id));
+                        const fresh = data.jobs.filter((j: Job) => !existingIds.has(j.id));
+                        return [...fresh, ...prev];
+                      });
+                      if (data.total_novas_salvas > 0) {
+                        alert(`Sucesso! ${data.total_novas_salvas} novas vagas coletadas diretamente do LinkedIn.`);
+                      } else {
+                        alert(`As vagas para "${query}" já foram importadas e já estão visíveis na sua lista!`);
+                      }
                     } else {
-                      alert("LinkedIn consultado. Nenhuma nova vaga recente encontrada para os termos.");
+                      alert("LinkedIn consultado. Nenhuma vaga encontrada no momento para estes termos.");
                     }
                   } catch (e) {
                     alert("Erro ao buscar no LinkedIn. Verifique a conexão com o backend.");
