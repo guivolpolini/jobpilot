@@ -53,6 +53,28 @@ const INITIAL_JOBS: Job[] = [
     salary: "R$ 4.800",
     raw_description: "Experiência com pipelines de dados, Python, SQL avançado, noções de AWS e familiaridade com LLMs.",
     created_at: "Há 2 dias"
+  },
+  {
+    id: 4,
+    title: "Estágio em Desenvolvimento Backend (Python)",
+    company: "NextGen Software",
+    location: "São Paulo, SP",
+    workplace_type: "Remoto",
+    job_url: "https://exemplo.com/vagas/nextgen-estagio-python",
+    salary: "R$ 2.500 + Benefícios",
+    raw_description: "Vaga de Estágio para estudantes de TI. Atuará com Python, FastAPI, testes unitários, consumo de APIs e Git. Ambiente focado em aprendizado acelerado.",
+    created_at: "Hoje"
+  },
+  {
+    id: 5,
+    title: "Estágio em Engenharia de Software",
+    company: "Inovare Labs",
+    location: "Florianópolis, SC",
+    workplace_type: "Híbrido",
+    job_url: "https://exemplo.com/vagas/inovare-estagio-eng",
+    salary: "R$ 2.200",
+    raw_description: "Oportunidade de estágio técnico. Requisitos: lógica de programação sólida, Python ou JavaScript, bancos SQL e vontade de aprender microsserviços.",
+    created_at: "Ontem"
   }
 ];
 
@@ -85,6 +107,33 @@ const INITIAL_MATCHES: Record<number, JobMatch> = {
     ],
     tailored_resume_url: "/uploads/curriculo_cloudscale_ats.pdf",
     created_at: "Ontem"
+  },
+  4: {
+    id: 104,
+    candidate_id: 1,
+    job_id: 4,
+    score: 95,
+    summary_fit: "Compatibilidade altíssima (95%). Seus conhecimentos em Python, FastAPI e Git superam a expectativa para estágio.",
+    matching_skills: ["Python", "FastAPI", "Git", "APIs REST", "Lógica de Programação"],
+    missing_skills: ["Familiaridade com rotinas do time"],
+    recommendations: [
+      "Destaque sua proatividade e o projeto JobPilot na carta de apresentação",
+      "Mostre seu repositório no GitHub para comprovar clean code"
+    ],
+    tailored_resume_url: "/uploads/curriculo_estagio_nextgen_ats.pdf",
+    created_at: "Hoje"
+  },
+  5: {
+    id: 105,
+    candidate_id: 1,
+    job_id: 5,
+    score: 91,
+    summary_fit: "Excelente encaixe. Perfil técnico muito sólido em bancos relacionais e desenvolvimento backend.",
+    matching_skills: ["Python", "PostgreSQL", "SQLAlchemy", "Git"],
+    missing_skills: ["JavaScript avançado"],
+    recommendations: ["Enfatize seu foco em backend e modelagem de banco"],
+    tailored_resume_url: "/uploads/curriculo_estagio_inovare_ats.pdf",
+    created_at: "Ontem"
   }
 };
 
@@ -95,6 +144,7 @@ export default function Dashboard() {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [search, setSearch] = useState("");
   const [workplaceFilter, setWorkplaceFilter] = useState<string>("ALL");
+  const [levelFilter, setLevelFilter] = useState<string>("ALL");
   const [minScoreFilter, setMinScoreFilter] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -132,10 +182,27 @@ export default function Dashboard() {
       workplaceFilter === "ALL" ||
       (j.workplace_type && j.workplace_type.toLowerCase() === workplaceFilter.toLowerCase());
 
+    const isInternship =
+      j.title.toLowerCase().includes("estágio") ||
+      j.title.toLowerCase().includes("estagio") ||
+      j.title.toLowerCase().includes("intern") ||
+      j.raw_description.toLowerCase().includes("estágio") ||
+      j.raw_description.toLowerCase().includes("estagio");
+
+    const isJunior =
+      j.title.toLowerCase().includes("júnior") ||
+      j.title.toLowerCase().includes("junior") ||
+      j.title.toLowerCase().includes("jr");
+
+    const matchesLevel =
+      levelFilter === "ALL" ||
+      (levelFilter === "ESTAGIO" && isInternship) ||
+      (levelFilter === "JUNIOR" && isJunior);
+
     const jobScore = matches[j.id]?.score ?? 0;
     const matchesScore = jobScore >= minScoreFilter;
 
-    return matchesSearch && matchesWorkplace && matchesScore;
+    return matchesSearch && matchesWorkplace && matchesLevel && matchesScore;
   });
 
   return (
@@ -213,6 +280,17 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="flex items-center gap-3">
+              {/* Filtro por Nível / Estágio */}
+              <select
+                value={levelFilter}
+                onChange={(e) => setLevelFilter(e.target.value)}
+                className="h-9 rounded-lg border border-slate-800 bg-slate-900/80 px-3 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+              >
+                <option value="ALL">Todos os Níveis</option>
+                <option value="ESTAGIO">🎓 Apenas Estágio</option>
+                <option value="JUNIOR">🚀 Apenas Júnior</option>
+              </select>
+
               {/* Filtro por Modalidade */}
               <select
                 value={workplaceFilter}
