@@ -1,0 +1,29 @@
+# Ambientes virtuais e dependências
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Arquivos de ambiente e segredos
+.env
+.env.local
+credentials.json
+*.pem
+*.key
+
+# Uploads locais e banco temporário
+uploads/
+*.sqlite3
+*.db
+
+# Logs e arquivos de sistema
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE e editores
+.vscode/
+.idea/
+*.swp
