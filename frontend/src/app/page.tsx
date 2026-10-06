@@ -189,7 +189,7 @@ export default function Dashboard() {
     }
 
     try {
-      const res = await fetch("http://localhost:8000/api/v1/jobs?candidate_id=1", {
+      const res = await fetch("http://localhost:8001/api/v1/jobs?candidate_id=1", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -438,7 +438,7 @@ export default function Dashboard() {
                   try {
                     const query = search || "estagio python";
                     const loc = locationFilter !== "ALL" ? locationFilter : "Brasil";
-                    const res = await fetch(`http://localhost:8000/api/v1/jobs/fetch-linkedin?keywords=${encodeURIComponent(query)}&location=${encodeURIComponent(loc)}&limit=8`, {
+                    const res = await fetch(`http://localhost:8001/api/v1/jobs/fetch-linkedin?keywords=${encodeURIComponent(query)}&location=${encodeURIComponent(loc)}&limit=8`, {
                       method: "POST"
                     });
                     const data = await res.json();
@@ -556,7 +556,7 @@ export default function Dashboard() {
                         Ver Detalhes
                       </button>
                       <a
-                        href={`http://localhost:8000/api/v1/apply/${job.id}`}
+                        href={`http://localhost:8001/api/v1/apply/${job.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-medium text-white shadow-md shadow-blue-500/20 transition hover:bg-blue-500"
@@ -686,7 +686,7 @@ export default function Dashboard() {
                           Ver Análise
                         </button>
                         <a
-                          href={`http://localhost:8000/api/v1/jobs/${job.id}/matches`}
+                          href={`http://localhost:8001/api/v1/jobs/${job.id}/matches`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-medium text-white hover:bg-blue-500 transition shadow-sm"
@@ -818,7 +818,7 @@ export default function Dashboard() {
                 Abrir Vaga Original
               </a>
               <a
-                href={`http://localhost:8000/api/v1/apply/${selectedJob.id}`}
+                href={`http://localhost:8001/api/v1/apply/${selectedJob.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-medium text-white hover:bg-blue-500 shadow-lg shadow-blue-500/20 transition"
