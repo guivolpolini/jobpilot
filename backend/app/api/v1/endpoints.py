@@ -10,6 +10,7 @@ from app.schemas.job import (
     ApplicationCreate, ApplicationResponse
 )
 from app.workers.match_worker import process_job_matching
+from app.workers.automation_worker import execute_application_automation
 
 router = APIRouter()
 
@@ -118,6 +119,9 @@ async def quick_apply_trigger(
         db.add(application)
         await db.commit()
         await db.refresh(application)
+
+    # Dispara worker assíncrono do Playwright
+    execute_application_automation.delay(application_id=application.id)
 
     return {
         "status": "success",
