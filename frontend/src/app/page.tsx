@@ -89,6 +89,7 @@ const INITIAL_MATCHES: Record<number, JobMatch> = {
 };
 
 export default function Dashboard() {
+  const [activeTab, setActiveTab] = useState<"jobs" | "metrics" | "resumes">("jobs");
   const [jobs, setJobs] = useState<Job[]>(INITIAL_JOBS);
   const [matches, setMatches] = useState<Record<number, JobMatch>>(INITIAL_MATCHES);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
@@ -141,15 +142,36 @@ export default function Dashboard() {
         </div>
 
         <nav className="mt-8 space-y-1.5">
-          <button className="flex w-full items-center gap-3 rounded-lg bg-blue-600/15 px-3 py-2.5 text-sm font-medium text-blue-400 transition hover:bg-blue-600/20">
+          <button 
+            onClick={() => setActiveTab("jobs")}
+            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+              activeTab === "jobs" 
+                ? "bg-blue-600/15 text-blue-400 font-semibold" 
+                : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
+            }`}
+          >
             <Briefcase className="h-4 w-4" />
             Vagas & Análises
           </button>
-          <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition hover:bg-slate-800/60 hover:text-white">
+          <button 
+            onClick={() => setActiveTab("metrics")}
+            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+              activeTab === "metrics" 
+                ? "bg-blue-600/15 text-blue-400 font-semibold" 
+                : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
+            }`}
+          >
             <TrendingUp className="h-4 w-4" />
             Métricas & Candidaturas
           </button>
-          <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition hover:bg-slate-800/60 hover:text-white">
+          <button 
+            onClick={() => setActiveTab("resumes")}
+            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+              activeTab === "resumes" 
+                ? "bg-blue-600/15 text-blue-400 font-semibold" 
+                : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
+            }`}
+          >
             <FileText className="h-4 w-4" />
             Currículos ATS
           </button>
@@ -214,83 +236,215 @@ export default function Dashboard() {
           </div>
         </header>
 
-        {/* Lista de Vagas */}
-        <section className="mt-8 space-y-3">
-          {filteredJobs.map((job) => {
-            const match = matches[job.id];
-            return (
-              <div
-                key={job.id}
-                className="group flex items-center justify-between rounded-xl border border-slate-800/80 bg-[#0e1629]/40 p-5 transition hover:border-slate-700 hover:bg-[#0e1629]/80"
-              >
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-3">
-                    <h3 className="font-semibold text-white text-base group-hover:text-blue-400 transition">
-                      {job.title}
-                    </h3>
-                    <span className="rounded-md border border-slate-700/60 bg-slate-800/40 px-2 py-0.5 text-xs text-slate-300">
-                      {job.workplace_type}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-4 text-xs text-slate-400">
-                    <span className="flex items-center gap-1.5">
-                      <Building className="h-3.5 w-3.5 text-slate-500" />
-                      {job.company}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 text-slate-500" />
-                      {job.location}
-                    </span>
-                    {job.salary && (
-                      <span className="text-slate-300 font-medium">
-                        💰 {job.salary}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-5">
-                  {match ? (
-                    <div className="text-right">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-400">Match ATS:</span>
-                        <span className={`text-base font-bold ${
-                          match.score >= 80 ? "text-emerald-400" : "text-amber-400"
-                        }`}>
-                          {match.score}%
-                        </span>
-                      </div>
-                      <span className="text-[11px] text-slate-500">
-                        {match.matching_skills.length} skills atendidas
+        {/* Conteúdo da Aba VAGAS */}
+        {activeTab === "jobs" && (
+          <section className="mt-8 space-y-3">
+            {filteredJobs.map((job) => {
+              const match = matches[job.id];
+              return (
+                <div
+                  key={job.id}
+                  className="group flex items-center justify-between rounded-xl border border-slate-800/80 bg-[#0e1629]/40 p-5 transition hover:border-slate-700 hover:bg-[#0e1629]/80"
+                >
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-3">
+                      <h3 className="font-semibold text-white text-base group-hover:text-blue-400 transition">
+                        {job.title}
+                      </h3>
+                      <span className="rounded-md border border-slate-700/60 bg-slate-800/40 px-2 py-0.5 text-xs text-slate-300">
+                        {job.workplace_type}
                       </span>
                     </div>
-                  ) : (
-                    <span className="text-xs text-slate-500 italic">Pendente análise</span>
-                  )}
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setSelectedJob(job)}
-                      className="rounded-lg border border-slate-700 bg-slate-800/80 px-3.5 py-2 text-xs font-medium text-white transition hover:bg-slate-700"
-                    >
-                      Ver Detalhes
-                    </button>
-                    <a
-                      href={`http://localhost:8000/api/v1/apply/${job.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-medium text-white shadow-md shadow-blue-500/20 transition hover:bg-blue-500"
-                    >
-                      <Send className="h-3.5 w-3.5" />
-                      1 Clique
-                    </a>
+                    <div className="flex items-center gap-4 text-xs text-slate-400">
+                      <span className="flex items-center gap-1.5">
+                        <Building className="h-3.5 w-3.5 text-slate-500" />
+                        {job.company}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5 text-slate-500" />
+                        {job.location}
+                      </span>
+                      {job.salary && (
+                        <span className="text-slate-300 font-medium">
+                          💰 {job.salary}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-5">
+                    {match ? (
+                      <div className="text-right">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-slate-400">Match ATS:</span>
+                          <span className={`text-base font-bold ${
+                            match.score >= 80 ? "text-emerald-400" : "text-amber-400"
+                          }`}>
+                            {match.score}%
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-slate-500">
+                          {match.matching_skills.length} skills atendidas
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-slate-500 italic">Pendente análise</span>
+                    )}
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setSelectedJob(job)}
+                        className="rounded-lg border border-slate-700 bg-slate-800/80 px-3.5 py-2 text-xs font-medium text-white transition hover:bg-slate-700"
+                      >
+                        Ver Detalhes
+                      </button>
+                      <a
+                        href={`http://localhost:8000/api/v1/apply/${job.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-medium text-white shadow-md shadow-blue-500/20 transition hover:bg-blue-500"
+                      >
+                        <Send className="h-3.5 w-3.5" />
+                        1 Clique
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </section>
+        )}
+
+        {/* Conteúdo da Aba MÉTRICAS & CANDIDATURAS */}
+        {activeTab === "metrics" && (
+          <section className="mt-8 space-y-6">
+            <div className="grid grid-cols-3 gap-6">
+              <div className="rounded-xl border border-slate-800/90 bg-[#0e1629]/70 p-6">
+                <h4 className="text-sm font-semibold text-slate-300">Funil de Conversão</h4>
+                <div className="mt-4 space-y-3">
+                  <div>
+                    <div className="flex justify-between text-xs text-slate-400 mb-1">
+                      <span>Vagas Coletadas</span>
+                      <span className="font-bold text-white">100% (2)</span>
+                    </div>
+                    <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
+                      <div className="h-full bg-blue-500 w-full" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs text-slate-400 mb-1">
+                      <span>Alto Match (&gt;80%)</span>
+                      <span className="font-bold text-emerald-400">100% (2)</span>
+                    </div>
+                    <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
+                      <div className="h-full bg-emerald-500 w-full" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs text-slate-400 mb-1">
+                      <span>Candidaturas Disparadas</span>
+                      <span className="font-bold text-purple-400">50% (1)</span>
+                    </div>
+                    <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
+                      <div className="h-full bg-purple-500 w-1/2" />
+                    </div>
                   </div>
                 </div>
               </div>
-            );
-          })}
-        </section>
+
+              <div className="rounded-xl border border-slate-800/90 bg-[#0e1629]/70 p-6">
+                <h4 className="text-sm font-semibold text-slate-300">Tempo de Resposta dos Workers</h4>
+                <div className="mt-4 space-y-2 text-xs">
+                  <div className="flex justify-between py-2 border-b border-slate-800">
+                    <span className="text-slate-400">Parsing de Vaga (LLM)</span>
+                    <span className="font-mono text-emerald-400">1.8s</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-slate-800">
+                    <span className="text-slate-400">Geração de PDF ATS (Playwright)</span>
+                    <span className="font-mono text-emerald-400">2.4s</span>
+                  </div>
+                  <div className="flex justify-between py-2">
+                    <span className="text-slate-400">Sync Google Sheets API</span>
+                    <span className="font-mono text-emerald-400">0.9s</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-slate-800/90 bg-[#0e1629]/70 p-6">
+                <h4 className="text-sm font-semibold text-slate-300">Status das Candidaturas</h4>
+                <div className="mt-4 flex items-center justify-around">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-400">1</div>
+                    <div className="text-xs text-slate-400 mt-1">Prontas</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-emerald-400">1</div>
+                    <div className="text-xs text-slate-400 mt-1">Enviada</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-400">0</div>
+                    <div className="text-xs text-slate-400 mt-1">Entrevistas</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Conteúdo da Aba CURRÍCULOS ATS */}
+        {activeTab === "resumes" && (
+          <section className="mt-8 space-y-4">
+            <div className="rounded-xl border border-slate-800/80 bg-[#0e1629]/50 p-6">
+              <h3 className="text-base font-semibold text-white">Versões Customizadas para ATS</h3>
+              <p className="text-xs text-slate-400 mt-1">
+                Currículos gerados pelo motor de IA mantendo histórico de versões e palavras-chave específicas por empresa.
+              </p>
+
+              <div className="mt-6 space-y-3">
+                {jobs.map((job) => {
+                  const match = matches[job.id];
+                  return (
+                    <div
+                      key={job.id}
+                      className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-900/60 p-4"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-blue-400" />
+                          <span className="text-sm font-medium text-white">{job.title} — {job.company}</span>
+                          <span className="rounded bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-400">
+                            Match {match ? match.score : 85}%
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-400">
+                          Formato: PDF A4 Otimizado para ATS • Template: Clean Tech Standard
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => setSelectedJob(job)}
+                          className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-700 hover:text-white transition"
+                        >
+                          Ver Análise
+                        </button>
+                        <a
+                          href={`http://localhost:8000/api/v1/jobs/${job.id}/matches`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-medium text-white hover:bg-blue-500 transition shadow-sm"
+                        >
+                          Baixar PDF
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
       </main>
 
       {/* Drawer Lateral de Detalhes da Vaga e Análise do Match */}
