@@ -31,7 +31,7 @@ class ProjectItem(BaseModel):
 
 class ExperienceItem(BaseModel):
     role: str
-    location: str = "São Caetano do Sul - SP"
+    location: str = "São Caetano do Sul - SP (Remoto)"
     period: str  # formato MM/AAAA - MM/AAAA ou MM/AAAA - Presente
     bullets: List[str] = Field(description="2 a 3 bullets no mesmo padrão dos projetos")
 
@@ -39,7 +39,7 @@ class ExperienceItem(BaseModel):
 class EducationItem(BaseModel):
     course: str
     institution: str
-    graduation_date: str  # Previsão: MM/AAAA ou Concluído: MM/AAAA
+    graduation_date: str
 
 
 class CertificationItem(BaseModel):
@@ -55,27 +55,27 @@ class LanguageItem(BaseModel):
 
 class StandardATSResumeContent(BaseModel):
     # 1. CABEÇALHO
-    full_name: str
+    full_name: str = "Guilherme Volpolini"
     location: str = "São Caetano do Sul - SP"
-    email: str
-    phone: str
-    linkedin_url: str
-    github_url: str
+    email: str = "guilherme.volpolini@gmail.com"
+    phone: str = "(11) 98765-4321"
+    linkedin_url: str = "https://www.linkedin.com/in/guilherme-volpolini-a60961312/"
+    github_url: str = "https://github.com/guivolpolini"
 
     # 2. OBJETIVO
-    objective: str = Field(description="1 linha com cargo-alvo e foco")
+    objective: str
 
     # 3. RESUMO
-    summary: str = Field(description="2 a 3 linhas, direto, sem clichês")
+    summary: str
 
     # 4. HABILIDADES TÉCNICAS
     technical_skills: TechnicalSkillsStructure
 
     # 5. PROJETOS
-    projects: List[ProjectItem] = Field(description="3 a 4 projetos reais")
+    projects: List[ProjectItem]
 
     # 6. EXPERIÊNCIA
-    experiences: List[ExperienceItem] = Field(description="Experiências profissionais e freelance")
+    experiences: List[ExperienceItem]
 
     # 7. FORMAÇÃO
     education: List[EducationItem]
@@ -94,65 +94,114 @@ def _build_standard_curated_resume(
     ats_keywords: List[str]
 ) -> StandardATSResumeContent:
     """
-    Constrói o currículo rigorosamente no padrão especificado pelo usuário:
-    - 9 seções na ordem exata solicitada
-    - Verbos de ação no passado/infinitivo
-    - Priorização cirúrgica com base na vaga sem inventar dados
+    Adapta cirurgicamente o currículo para a vaga alvo:
+    - OBJETIVO espelha exatamente o cargo e foco da vaga.
+    - RESUMO destaca o alinhamento acadêmico e técnico específico da vaga.
+    - HABILIDADES TÉCNICAS são reordenadas trazendo para a frente os requisitos da vaga.
+    - PROJETOS e BULLETS são priorizados para comprovar a stack exigida.
     """
-    desc_lower = (job_description + " " + job_title).lower()
+    raw_text = (job_title + " " + job_description + " " + " ".join(ats_keywords)).lower()
+    text_context = raw_text
 
-    # 1. OBJETIVO (1 linha com cargo-alvo e foco)
-    is_estagio = any(w in desc_lower for w in ["estágio", "estagio", "intern"])
-    is_junior = any(w in desc_lower for w in ["júnior", "junior", "jr"])
+    # Detectores de perfil da vaga
+    has_python = any(k in text_context for k in ["python", "fastapi", "django", "flask"])
+    has_java = any(k in text_context for k in ["java", "spring", "jvm", "poo"])
+    has_frontend = any(k in text_context for k in ["react", "next", "frontend", "front-end", "javascript", "typescript", "tailwind", "css", "html"])
+    has_data_ai = any(k in text_context for k in ["ia", "ai", "dados", "gemini", "llm", "inteligência artificial", "inteligencia artificial", "nlp"])
+    has_fullstack = (has_python or has_java) and has_frontend or "fullstack" in text_context or "full stack" in text_context
+    is_estagio = any(w in text_context for w in ["estágio", "estagio", "estagiário", "estagiario", "intern", "estag"])
+    is_junior = any(w in text_context for w in ["júnior", "junior", "jr", "iniciante", "trainee"])
 
+    # 1. OBJETIVO (1 linha adaptada com cargo-alvo e foco)
+    clean_role = job_title.strip()
     if is_estagio:
-        objective = "Estágio em Desenvolvimento de Software | Foco em Back-end e Integrações"
+        if has_frontend and not has_python:
+            objective = "Estágio em Desenvolvimento Web / Front-end | Foco em React, TypeScript e Next.js"
+        elif has_java and not has_python:
+            objective = "Estágio em Desenvolvimento de Software | Foco em Java e Back-end"
+        elif has_data_ai:
+            objective = "Estágio em Desenvolvimento de Software | Foco em Python e Aplicações com IA"
+        else:
+            objective = f"Estágio em Desenvolvimento de Software | Foco em {clean_role if len(clean_role) < 35 else 'Back-end e APIs'}"
     elif is_junior:
-        objective = f"Desenvolvedor Júnior | Foco em Back-end ({job_title})"
+        if has_frontend and not has_python:
+            objective = f"Desenvolvedor Front-end Júnior | Foco em React e TypeScript ({clean_role})"
+        elif has_java and not has_python:
+            objective = f"Desenvolvedor Java Júnior | Foco em Back-end e Microsserviços"
+        else:
+            objective = f"Desenvolvedor Júnior | Foco em {clean_role if len(clean_role) < 35 else 'Back-end e APIs'}"
     else:
-        clean_title = job_title if len(job_title) < 40 else "Desenvolvimento de Software"
-        objective = f"{clean_title} | Foco em Back-end e APIs"
+        objective = f"{clean_role} | Foco em Arquitetura de Software e APIs"
 
-    # 2. RESUMO (2 a 3 linhas, direto, sem clichês)
-    summary = (
-        "Estudante de Ciência da Computação no Instituto Mauá de Tecnologia com sólida base em algoritmos, "
-        "estruturas de dados e modelagem relacional. Experiência prática no desenvolvimento de APIs RESTful com Python (FastAPI) "
-        "e Java, integração de serviços de IA generativa e entrega de soluções web reais em produção."
-    )
-
-    # 3. HABILIDADES TÉCNICAS (agrupadas exatamente pelas 5 categorias)
-    # Reordena conforme palavras-chave da vaga
-    all_langs = ["Python", "Java", "JavaScript", "TypeScript", "SQL"]
-    if "java" in desc_lower and "python" not in desc_lower:
-        languages = ["Java", "Python", "SQL", "TypeScript", "JavaScript"]
+    # 2. RESUMO (2 a 3 linhas adaptadas cirurgicamente aos requisitos da vaga)
+    if has_java and not has_python:
+        summary = (
+            f"Estudante de Ciência da Computação no Instituto Mauá de Tecnologia com sólida base em POO e Java. "
+            f"Experiência prática no desenvolvimento de sistemas orientados a objetos, estruturas de dados e modelagem de bancos relacionais. "
+            f"Vivência em projetos colaborativos com versionamento Git e aplicação de Clean Code para o cargo de {clean_role}."
+        )
+    elif has_frontend and not has_python:
+        summary = (
+            f"Estudante de Ciência da Computação no Instituto Mauá de Tecnologia com atuação prática como Desenvolvedor Web Freelance (VolpoTech). "
+            f"Experiência na construção de aplicações web responsivas e performáticas com React, Next.js, TypeScript e Tailwind CSS. "
+            f"Foco em consumo de APIs REST, interfaces de alta conversão e deploy contínuo direcionado para {clean_role}."
+        )
+    elif has_data_ai:
+        summary = (
+            f"Estudante de Ciência da Computação no Instituto Mauá de Tecnologia com ênfase em Python e IA generativa. "
+            f"Desenvolvedor de soluções que integram LLMs (Google Gemini API) a pipelines robustos em FastAPI e validação com Pydantic. "
+            f"Forte fundamentação matemática, testes unitários com pytest e foco prático na oportunidade de {clean_role}."
+        )
     else:
-        languages = ["Python", "Java", "SQL", "TypeScript", "JavaScript"]
+        summary = (
+            f"Estudante de Ciência da Computação no Instituto Mauá de Tecnologia com sólida base em algoritmos e modelagem relacional. "
+            f"Experiência no desenvolvimento de APIs RESTful com Python (FastAPI), automação de processos e integração de microsserviços. "
+            f"Projetos reais em produção e práticas de Clean Code alinhados aos requisitos de {clean_role}."
+        )
 
-    all_frameworks = ["FastAPI", "SQLAlchemy", "Pydantic", "React", "Next.js", "Tailwind CSS", "Node.js"]
-    # Reordena frameworks se a vaga focar em React/Next ou FastAPI
-    if any(k in desc_lower for k in ["react", "next", "frontend", "front-end"]):
-        frameworks = ["React", "Next.js", "Tailwind CSS", "FastAPI", "SQLAlchemy", "Pydantic", "Node.js"]
+    # 3. HABILIDADES TÉCNICAS (reordenadas dinamicamente trazendo as exigências da vaga para a frente)
+    languages_pool = ["Python", "Java", "SQL", "TypeScript", "JavaScript"]
+    if has_java and not has_python:
+        languages_order = ["Java", "SQL", "Python", "TypeScript", "JavaScript"]
+    elif has_frontend:
+        languages_order = ["TypeScript", "JavaScript", "Python", "SQL", "Java"]
     else:
-        frameworks = ["FastAPI", "SQLAlchemy", "Pydantic", "React", "Next.js", "Node.js", "Tailwind CSS"]
+        languages_order = ["Python", "SQL", "Java", "TypeScript", "JavaScript"]
 
-    databases = ["MySQL", "PostgreSQL", "MongoDB", "Supabase"]
-    if "postgres" in desc_lower:
-        databases = ["PostgreSQL", "MySQL", "MongoDB", "Supabase"]
-    elif "mongo" in desc_lower:
-        databases = ["MongoDB", "MySQL", "PostgreSQL", "Supabase"]
+    frameworks_pool = ["FastAPI", "SQLAlchemy", "Pydantic", "React", "Next.js", "Tailwind CSS", "Node.js"]
+    if has_frontend:
+        frameworks_order = ["React", "Next.js", "Tailwind CSS", "FastAPI", "SQLAlchemy", "Pydantic", "Node.js"]
+    else:
+        frameworks_order = ["FastAPI", "SQLAlchemy", "Pydantic", "Node.js", "React", "Next.js", "Tailwind CSS"]
 
-    tools = ["Git", "GitHub", "Docker", "pytest", "Playwright", "Linux", "Vercel", "Render", "Google Gemini API"]
+    databases_pool = ["MySQL", "PostgreSQL", "MongoDB", "Supabase"]
+    if "postgres" in text_context:
+        databases_order = ["PostgreSQL", "MySQL", "MongoDB", "Supabase"]
+    elif "mongo" in text_context:
+        databases_order = ["MongoDB", "MySQL", "PostgreSQL", "Supabase"]
+    else:
+        databases_order = ["MySQL", "PostgreSQL", "MongoDB", "Supabase"]
+
+    tools_pool = ["Git", "GitHub", "Docker", "pytest", "Playwright", "Linux", "Vercel", "Render", "Google Gemini API"]
+    if "docker" in text_context:
+        tools_order = ["Docker", "Git", "GitHub", "pytest", "Linux", "Playwright", "Vercel", "Render", "Google Gemini API"]
+    elif "test" in text_context or "pytest" in text_context:
+        tools_order = ["pytest", "Git", "GitHub", "Docker", "Playwright", "Linux", "Vercel", "Render", "Google Gemini API"]
+    else:
+        tools_order = ["Git", "GitHub", "Docker", "pytest", "Playwright", "Linux", "Vercel", "Render", "Google Gemini API"]
+
     methodologies = ["Programação Orientada a Objetos (POO)", "Arquitetura RESTful", "Clean Code", "Scrum", "Kanban"]
 
-    # 4. PROJETOS (3 a 4 projetos reais com Nome | stack | link e bullets de ação)
+    # 4. PROJETOS (seleção e priorização dos 3 projetos que melhor comprovam a vaga)
     catalog = [
         {
             "name": "Assistente de Estudos com IA",
             "stack": "Python, FastAPI, SQLAlchemy, Pydantic, Google Gemini API, pytest",
             "url": "https://github.com/guivolpolini/ai-study-assistant",
+            "tags": ["python", "fastapi", "ia", "ai", "gemini", "pytest", "backend"],
             "bullets": [
                 "Desenvolveu arquitetura modular em camadas (routers, services e schemas) com validação estrita via Pydantic.",
-                "Integrou a API do Google Gemini com engenharia de prompts estruturados para geração determinística de JSON com quizzes e resumos.",
+                "Integrou a API do Google Gemini com prompts estruturados para geração determinística de JSON com quizzes e resumos.",
                 "Implementou suíte de testes unitários automatizados com pytest e mocks, assegurando confiabilidade sem chamadas externas."
             ]
         },
@@ -160,6 +209,7 @@ def _build_standard_curated_resume(
             "name": "JobPilot - Automação & Matching ATS",
             "stack": "Python, FastAPI, Next.js, SQLite/PostgreSQL, Playwright",
             "url": "https://github.com/guivolpolini/jobpilot",
+            "tags": ["python", "fastapi", "automação", "playwright", "next.js", "fullstack", "backend"],
             "bullets": [
                 "Construiu sistema de monitoramento de oportunidades com análise semântica de aderência a requisitos de vagas.",
                 "Implementou pipeline de compilação dinâmica de currículos aderentes a ATS utilizando Playwright headless.",
@@ -170,6 +220,7 @@ def _build_standard_curated_resume(
             "name": "E-Commerce Full Stack & API REST",
             "stack": "FastAPI, MySQL, SQLAlchemy, JWT, React, Next.js",
             "url": "https://github.com/guivolpolini/ecommerce-api",
+            "tags": ["fastapi", "mysql", "sql", "jwt", "react", "next.js", "fullstack", "backend"],
             "bullets": [
                 "Projetou API RESTful completa para comércio eletrônico com autenticação segura baseada em JWT e senhas com hash criptográfico.",
                 "Modelou banco relacional MySQL com SQLAlchemy contemplando relacionamentos 1:N e N:N para produtos, pedidos e categorias.",
@@ -180,6 +231,7 @@ def _build_standard_curated_resume(
             "name": "DigestiveQuest - Jogo Educativo em Java",
             "stack": "Java, POO, Swing",
             "url": "https://github.com/guivolpolini/DigestiveQuest",
+            "tags": ["java", "poo", "orientação a objetos", "desktop"],
             "bullets": [
                 "Desenvolveu jogo interativo em equipe aplicando herança, polimorfismo, encapsulamento e tratamento de exceções em Java.",
                 "Estruturou lógica de gameplay e progressão pedagógica para o Colégio Piaget.",
@@ -190,6 +242,7 @@ def _build_standard_curated_resume(
             "name": "SaaS Barbearia & Agendamento Digital",
             "stack": "React, Vite, TypeScript, Tailwind CSS, Supabase, n8n",
             "url": "https://github.com/guivolpolini/saas-barbearia",
+            "tags": ["react", "typescript", "tailwind", "frontend", "supabase", "postgres", "n8n"],
             "bullets": [
                 "Desenvolveu aplicação de agendamento online com arquitetura multiempresa e persistência no PostgreSQL via Supabase.",
                 "Configurou webhooks e automação de fluxos com n8n para notificações em tempo real.",
@@ -198,16 +251,18 @@ def _build_standard_curated_resume(
         }
     ]
 
-    # Reordena projetos priorizando stack da vaga
-    def score_proj(p):
+    # Pontuação por afinidade com as exigências da vaga
+    def score_project(p):
         score = 0
-        s_lower = p["stack"].lower()
-        for kw in (desc_lower.split() + ats_keywords):
-            if len(kw) > 3 and kw.lower() in s_lower:
+        for tag in p["tags"]:
+            if tag in text_context:
+                score += 5
+        for kw in ats_keywords:
+            if kw.lower() in p["stack"].lower():
                 score += 3
         return score
 
-    catalog.sort(key=score_proj, reverse=True)
+    catalog.sort(key=score_project, reverse=True)
     selected_projects = [
         ProjectItem(
             name=p["name"],
@@ -218,31 +273,34 @@ def _build_standard_curated_resume(
         for p in catalog[:3]
     ]
 
-    # 5. EXPERIÊNCIA (freelance incluso) Cargo/Atividade | Local | período
+    # 5. EXPERIÊNCIA (bullets adaptados para a vaga)
+    exp_web_bullets = [
+        "Desenvolveu websites e landing pages responsivas com Next.js, React e Tailwind CSS com foco em SEO e conversão para pequenos negócios.",
+        "Implementou integrações com APIs REST e webhooks para automação de atendimento e agendamento via WhatsApp.",
+        "Gerenciou ciclos de entrega completos com clientes, desde o levantamento de requisitos até deploy em produção na Vercel."
+    ]
+
+    exp_opensource_bullets = [
+        "Implementou repositórios públicos aplicando boas práticas de versionamento com Git, Conventional Commits e documentação técnica.",
+        f"Construiu APIs robustas utilizando {'Java' if has_java and not has_python else 'FastAPI'} com testes automatizados e validação rigorosa de payloads.",
+        "Colaborou em projetos em equipe utilizando metodologias ágeis Scrum/Kanban."
+    ]
+
     experiences = [
         ExperienceItem(
             role="Desenvolvedor Web Freelance",
             location="São Caetano do Sul - SP (Remoto)",
             period="01/2024 - Presente",
-            bullets=[
-                "Desenvolveu websites e landing pages responsivas com Next.js, React e Tailwind CSS com foco em SEO e conversão para pequenos negócios.",
-                "Implementou integrações com APIs REST e webhooks para automação de atendimento e agendamento via WhatsApp.",
-                "Gerenciou ciclos de entrega completos com clientes, desde o levantamento de requisitos até deploy em produção na Vercel."
-            ]
+            bullets=exp_web_bullets
         ),
         ExperienceItem(
             role="Desenvolvedor de Software (Projetos Open Source)",
             location="GitHub (Remoto)",
             period="03/2024 - Presente",
-            bullets=[
-                "Implementou repositórios públicos aplicando boas práticas de versionamento com Git, Conventional Commits e documentação técnica.",
-                "Construiu APIs robustas utilizando FastAPI e Java com testes automatizados e validação rigorosa de payloads.",
-                "Colaborou em projetos em equipe utilizando metodologias ágeis Scrum/Kanban."
-            ]
+            bullets=exp_opensource_bullets
         )
     ]
 
-    # 6. FORMAÇÃO: Curso | Instituição | previsão de conclusão
     education = [
         EducationItem(
             course="Bacharelado em Ciência da Computação",
@@ -251,7 +309,6 @@ def _build_standard_curated_resume(
         )
     ]
 
-    # 7. CERTIFICAÇÕES E CURSOS: nome | instituição | ano
     certifications = [
         CertificationItem(name="Certificação Java Programmer", institution="Oracle", year="2024"),
         CertificationItem(name="CC50 - Introdução à Ciência da Computação (CS50)", institution="Harvard / Fundação Estudar", year="2024"),
@@ -259,8 +316,7 @@ def _build_standard_curated_resume(
         CertificationItem(name="Network Technician Career Path", institution="Cisco", year="2023")
     ]
 
-    # 8. IDIOMAS: idioma, nível
-    languages_list = [
+    languages = [
         LanguageItem(language="Português", level="Nativo"),
         LanguageItem(language="Inglês", level="Avançado"),
         LanguageItem(language="Espanhol", level="Intermediário")
@@ -276,17 +332,17 @@ def _build_standard_curated_resume(
         objective=objective,
         summary=summary,
         technical_skills=TechnicalSkillsStructure(
-            languages=languages,
-            frameworks=frameworks,
-            databases=databases,
-            tools=tools,
+            languages=languages_order,
+            frameworks=frameworks_order,
+            databases=databases_order,
+            tools=tools_order,
             methodologies=methodologies
         ),
         projects=selected_projects,
         experiences=experiences,
         education=education,
         certifications=certifications,
-        languages=languages_list
+        languages=languages
     )
 
 
@@ -297,21 +353,21 @@ def generate_tailored_resume(
     ats_keywords: List[str]
 ) -> StandardATSResumeContent:
     """
-    Gera currículo seguindo ESTRITAMENTE as 9 seções do padrão ATS solicitado:
-    CABEÇALHO, OBJETIVO, RESUMO, HABILIDADES TÉCNICAS, PROJETOS, EXPERIÊNCIA, FORMAÇÃO, CERTIFICAÇÕES E CURSOS, IDIOMAS.
+    Gera currículo adaptado para cada vaga alvo específica respeitando
+    o modelo estrito de 9 seções e personalizando palavras-chave e prioridades.
     """
     prompt = f"""
 Você é um especialista em currículos para a área de tecnologia.
-Gere o currículo EXATAMENTE no modelo estruturado abaixo, sem mudar a ordem das seções nem inventar informações.
+Adapte o currículo EXATAMENTE ao modelo especificado abaixo para a vaga informada.
 
-FORMATO E REGRAS:
+REGRAS OBRIGATÓRIAS:
 - Uma coluna, texto simples, compatível com ATS (sem tabelas, foto, ícones ou barras de nível).
 - Máximo 1 página.
 - Idioma: português.
 - Datas no formato MM/AAAA.
 - Bullets começam com verbo no passado ou infinitivo (Desenvolveu, Implementou, Integrou...).
-- Priorize o que a vaga pede: reordene habilidades e projetos conforme a descrição da vaga e use as mesmas palavras-chave dela, apenas com skills reais.
-- NUNCA invente tecnologia, métrica ou experiência.
+- Priorize o que a vaga pede: reordene habilidades e projetos conforme a descrição da vaga e use as mesmas palavras-chave dela, apenas se o candidato realmente tiver a skill.
+- Nunca invente tecnologia, métrica ou experiência.
 
 === DADOS REAIS DO CANDIDATO ===
 {json.dumps(base_profile, ensure_ascii=False, indent=2)}
@@ -321,10 +377,10 @@ Cargo: {job_title}
 Descrição:
 {job_description}
 
-=== PALAVRAS-CHAVE ATS ===
+=== PALAVRAS-CHAVE ATS DA VAGA ===
 {json.dumps(ats_keywords, ensure_ascii=False)}
 
-=== ESTRUTURA RIGOROSA (JSON SCHEMA) ===
+=== FORMATO JSON REQUERIDO ===
 {{
   "full_name": "Guilherme Volpolini",
   "location": "São Caetano do Sul - SP",
@@ -332,23 +388,23 @@ Descrição:
   "phone": "(11) 98765-4321",
   "linkedin_url": "https://www.linkedin.com/in/guilherme-volpolini-a60961312/",
   "github_url": "https://github.com/guivolpolini",
-  "objective": "1 linha com cargo-alvo e foco (ex.: Estágio em Desenvolvimento de Software, foco em backend)",
-  "summary": "2 a 3 linhas, direto, sem clichês ('proativo', 'dinâmico')",
+  "objective": "1 linha adaptada com cargo-alvo e foco alinhado à vaga",
+  "summary": "2 a 3 linhas adaptadas ao contexto da vaga, direto, sem clichês",
   "technical_skills": {{
-    "languages": ["Python", "Java", "SQL", "TypeScript", "JavaScript"],
-    "frameworks": ["FastAPI", "SQLAlchemy", "Pydantic", "React", "Next.js"],
-    "databases": ["MySQL", "PostgreSQL", "MongoDB"],
-    "tools": ["Git", "GitHub", "Docker", "pytest", "Linux"],
-    "methodologies": ["POO", "APIs RESTful", "Clean Code", "Scrum"]
+    "languages": ["...reordenadas com as linguagens pedidas pela vaga no topo"],
+    "frameworks": ["...reordenados com os frameworks pedidos pela vaga no topo"],
+    "databases": ["...reordenados com os bancos pedidos pela vaga no topo"],
+    "tools": ["...reordenadas com ferramentas pedidas pela vaga no topo"],
+    "methodologies": ["POO", "Arquitetura RESTful", "Clean Code", "Scrum", "Kanban"]
   }},
   "projects": [
     {{
-      "name": "Nome do Projeto",
-      "stack": "Tecnologias utilizadas",
+      "name": "Nome do Projeto (escolhido entre os repositórios reais do candidato que melhor combinam com a vaga)",
+      "stack": "Stack do projeto",
       "url": "https://github.com/guivolpolini/...",
       "bullets": [
-        "Verbo de ação + o que foi feito + tecnologia + resultado/impacto",
-        "Verbo de ação + o que foi feito + tecnologia + resultado/impacto"
+        "Verbo de ação + o que foi feito + tecnologia + resultado/impacto com foco nas keywords da vaga",
+        "Verbo de ação + o que foi feito + tecnologia + resultado/impacto com foco nas keywords da vaga"
       ]
     }}
   ],
@@ -358,8 +414,17 @@ Descrição:
       "location": "São Caetano do Sul - SP (Remoto)",
       "period": "01/2024 - Presente",
       "bullets": [
-        "Verbo de ação + o que foi feito + tecnologia + resultado/impacto",
-        "Verbo de ação + o que foi feito + tecnologia + resultado/impacto"
+        "Bullets com verbos de ação valorizando competências que se conectam com a vaga",
+        "Bullets com verbos de ação valorizando competências que se conectam com a vaga"
+      ]
+    }},
+    {{
+      "role": "Desenvolvedor de Software (Projetos Open Source)",
+      "location": "GitHub (Remoto)",
+      "period": "03/2024 - Presente",
+      "bullets": [
+        "Bullets com verbos de ação enfatizando o stack da vaga (FastAPI, Java, testes, etc.)",
+        "Bullets com verbos de ação enfatizando o stack da vaga (FastAPI, Java, testes, etc.)"
       ]
     }}
   ],
@@ -371,15 +436,15 @@ Descrição:
     }}
   ],
   "certifications": [
-    {{
-      "name": "Certificação Java Programmer",
-      "institution": "Oracle",
-      "year": "2024"
-    }}
+    {{ "name": "Certificação Java Programmer", "institution": "Oracle", "year": "2024" }},
+    {{ "name": "CC50 - Introdução à Ciência da Computação (CS50)", "institution": "Harvard / Fundação Estudar", "year": "2024" }},
+    {{ "name": "Desenvolvimento Orientado a Objetos com Python", "institution": "Fundação Bradesco", "year": "2024" }},
+    {{ "name": "Network Technician Career Path", "institution": "Cisco", "year": "2023" }}
   ],
   "languages": [
     {{ "language": "Português", "level": "Nativo" }},
-    {{ "language": "Inglês", "level": "Avançado" }}
+    {{ "language": "Inglês", "level": "Avançado" }},
+    {{ "language": "Espanhol", "level": "Intermediário" }}
   ]
 }}
 """
@@ -388,7 +453,7 @@ Descrição:
         response = client.chat.completions.create(
             model=settings.LLM_MODEL,
             messages=[
-                {"role": "system", "content": "Você é um especialista em currículos de tecnologia ATS. Responda exclusivamente com JSON no schema exato fornecido."},
+                {"role": "system", "content": "Você é um especialista em currículos de tecnologia ATS. Responda exclusivamente com JSON no schema estrito."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.2,
@@ -398,5 +463,5 @@ Descrição:
         data = json.loads(content)
         return StandardATSResumeContent(**data)
     except Exception as e:
-        logger.info(f"LLM offline ({e}). Gerando modelo padronizado estrito com dados do GitHub e LinkedIn.")
+        logger.info(f"LLM indisponível ({e}). Gerando adaptação algorítmica cirúrgica para a vaga.")
         return _build_standard_curated_resume(base_profile, job_title, job_description, ats_keywords)
