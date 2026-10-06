@@ -34,9 +34,11 @@ class LinkedInJobsScraper:
         """
         Busca vagas recentes no LinkedIn usando a API pública de busca.
         """
+        # Limpeza básica do termo para o padrão da API de vagas do LinkedIn
+        clean_keywords = keywords.replace("estágio", "estagio").replace("TI", "software").strip()
         params = {
-            "keywords": keywords,
-            "location": location,
+            "keywords": clean_keywords or "estagio software python",
+            "location": location if location != "ALL" else "Brasil",
             "start": 0,
             "f_TPR": "r2592000", # Últimos 30 dias
         }

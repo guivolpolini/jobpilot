@@ -45,15 +45,17 @@ async def fetch_and_save_linkedin_jobs(
             match = JobMatch(
                 candidate_id=candidate_id,
                 job_id=new_job.id,
-                score=86,
-                summary_fit=f"Vaga coletada diretamente do LinkedIn. Boa compatibilidade com seu perfil para {item['title']}.",
+                score=88,
+                summary_fit=f"Vaga coletada do LinkedIn para {item['title']}. Excelente oportunidade de entrada.",
                 matching_skills=["Python", "Git", "Lógica de Programação", "APIs"],
                 missing_skills=["Requisitos específicos da empresa"],
-                recommendations=["Acesse o link do LinkedIn e confira os detalhes adicionais da vaga."],
+                recommendations=["Acesse o link do LinkedIn e confira os requisitos específicos."],
                 tailored_resume_url=f"/uploads/curriculo_job_{new_job.id}_cand_{candidate_id}.pdf"
             )
             db.add(match)
             await db.commit()
+        else:
+            saved_jobs.append(existing)
 
     return {
         "status": "success",
