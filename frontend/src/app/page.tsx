@@ -258,6 +258,8 @@ export default function Dashboard() {
       }));
       setIsAddModalOpen(false);
     }
+  };
+
   const handleQuickApply = async (job: Job) => {
     setApplyingJob(job);
     setApplySuccess(false);
