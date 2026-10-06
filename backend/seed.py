@@ -74,19 +74,34 @@ async def seed_database():
                 )
             },
             {
-                "title": "Software Engineer Jr (APIs & Integrações)",
-                "company": "CloudScale Systems",
-                "location": "Curitiba, PR",
+                "title": "Junior Data & Backend Developer",
+                "company": "DataCorp Analytics",
+                "location": "Belo Horizonte, MG",
                 "workplace_type": "Remoto",
-                "job_url": "https://exemplo.com/vagas/cloudscale-jr",
-                "salary": "R$ 5.200",
-                "source": "Lever",
-                "raw_description": (
-                    "Oportunidade para atuar no desenvolvimento de microsserviços e automação. "
-                    "Requisitos: Python, entendimento de filas assíncronas (Redis/Celery ou RabbitMQ), "
-                    "conhecimento em SQL e consumo de APIs externas. "
-                    "Diferenciais: automação com Playwright/Selenium e noções de cloud (AWS)."
-                )
+                "job_url": "https://exemplo.com/vagas/datacorp-dev",
+                "salary": "R$ 4.800",
+                "source": "Manual",
+                "raw_description": "Experiência com pipelines de dados, Python, SQL avançado, noções de AWS e familiaridade com LLMs."
+            },
+            {
+                "title": "Estágio em Desenvolvimento Backend (Python)",
+                "company": "NextGen Software",
+                "location": "São Paulo, SP",
+                "workplace_type": "Remoto",
+                "job_url": "https://exemplo.com/vagas/nextgen-estagio-python",
+                "salary": "R$ 2.500 + Benefícios",
+                "source": "Gupy",
+                "raw_description": "Vaga de Estágio para estudantes de TI. Atuará com Python, FastAPI, testes unitários, consumo de APIs e Git. Ambiente focado em aprendizado acelerado."
+            },
+            {
+                "title": "Estágio em Engenharia de Software",
+                "company": "Inovare Labs",
+                "location": "Florianópolis, SC",
+                "workplace_type": "Híbrido",
+                "job_url": "https://exemplo.com/vagas/inovare-estagio-eng",
+                "salary": "R$ 2.200",
+                "source": "Gupy",
+                "raw_description": "Oportunidade de estágio técnico. Requisitos: lógica de programação sólida, Python ou JavaScript, bancos SQL e vontade de aprender microsserviços."
             }
         ]
 

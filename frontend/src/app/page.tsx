@@ -430,6 +430,36 @@ export default function Dashboard() {
                 />
               </div>
 
+              {/* Botão de Buscar Vagas no LinkedIn */}
+              <button
+                disabled={isLoading}
+                onClick={async () => {
+                  setIsLoading(true);
+                  try {
+                    const query = search || "estagio python";
+                    const loc = locationFilter !== "ALL" ? locationFilter : "Brasil";
+                    const res = await fetch(`http://localhost:8000/api/v1/jobs/fetch-linkedin?keywords=${encodeURIComponent(query)}&location=${encodeURIComponent(loc)}&limit=8`, {
+                      method: "POST"
+                    });
+                    const data = await res.json();
+                    if (data.jobs && data.jobs.length > 0) {
+                      setJobs((prev) => [...data.jobs, ...prev]);
+                      alert(`Sucesso! ${data.total_novas_salvas} novas vagas coletadas diretamente do LinkedIn.`);
+                    } else {
+                      alert("LinkedIn consultado. Nenhuma nova vaga recente encontrada para os termos.");
+                    }
+                  } catch (e) {
+                    alert("Erro ao buscar no LinkedIn. Verifique a conexão com o backend.");
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                className="flex items-center gap-1.5 h-9 rounded-lg border border-blue-500/40 bg-blue-500/10 px-3 text-xs font-semibold text-blue-400 hover:bg-blue-500/20 transition disabled:opacity-50"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
+                Buscar no LinkedIn
+              </button>
+
               {/* Botão de Cadastrar Nova Vaga */}
               <button
                 onClick={() => setIsAddModalOpen(true)}
