@@ -146,6 +146,7 @@ export default function Dashboard() {
   const [search, setSearch] = useState("");
   const [workplaceFilter, setWorkplaceFilter] = useState<string>("ALL");
   const [levelFilter, setLevelFilter] = useState<string>("ALL");
+  const [locationFilter, setLocationFilter] = useState<string>("ALL");
   const [minScoreFilter, setMinScoreFilter] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -283,10 +284,14 @@ export default function Dashboard() {
       (levelFilter === "ESTAGIO" && isInternship) ||
       (levelFilter === "JUNIOR" && isJunior);
 
+    const matchesLocation =
+      locationFilter === "ALL" ||
+      (j.location && j.location.toLowerCase().includes(locationFilter.toLowerCase()));
+
     const jobScore = matches[j.id]?.score ?? 0;
     const matchesScore = jobScore >= minScoreFilter;
 
-    return matchesSearch && matchesWorkplace && matchesLevel && matchesScore;
+    return matchesSearch && matchesWorkplace && matchesLevel && matchesLocation && matchesScore;
   });
 
   return (
@@ -385,6 +390,20 @@ export default function Dashboard() {
                 <option value="Remoto">Apenas Remoto</option>
                 <option value="Híbrido">Apenas Híbrido</option>
                 <option value="Presencial">Apenas Presencial</option>
+              </select>
+
+              {/* Filtro por Localidade */}
+              <select
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
+                className="h-9 rounded-lg border border-slate-800 bg-slate-900/80 px-3 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+              >
+                <option value="ALL">📍 Todas Localidades</option>
+                <option value="São Paulo">São Paulo (SP)</option>
+                <option value="Curitiba">Curitiba (PR)</option>
+                <option value="Belo Horizonte">Belo Horizonte (MG)</option>
+                <option value="Florianópolis">Florianópolis (SC)</option>
+                <option value="Rio de Janeiro">Rio de Janeiro (RJ)</option>
               </select>
 
               {/* Filtro por Match Mínimo */}
@@ -824,16 +843,14 @@ export default function Dashboard() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-slate-300">Modalidade</label>
-                  <select
-                    value={newJob.workplace_type}
-                    onChange={(e) => setNewJob({ ...newJob, workplace_type: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-white focus:border-blue-500 focus:outline-none"
-                  >
-                    <option value="Remoto">Remoto</option>
-                    <option value="Híbrido">Híbrido</option>
-                    <option value="Presencial">Presencial</option>
-                  </select>
+                  <label className="text-xs font-medium text-slate-300">Localidade (Cidade, UF)</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: São Paulo, SP ou Remoto"
+                    value={newJob.location}
+                    onChange={(e) => setNewJob({ ...newJob, location: e.target.value })}
+                    className="mt-1 w-full rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                  />
                 </div>
               </div>
 
