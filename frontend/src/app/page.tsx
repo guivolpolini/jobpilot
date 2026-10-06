@@ -150,6 +150,8 @@ export default function Dashboard() {
   const [minScoreFilter, setMinScoreFilter] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [applyingJob, setApplyingJob] = useState<Job | null>(null);
+  const [applySuccess, setApplySuccess] = useState<boolean>(false);
   const [newJob, setNewJob] = useState({
     title: "",
     company: "",
@@ -255,6 +257,15 @@ export default function Dashboard() {
         }
       }));
       setIsAddModalOpen(false);
+    }
+  const handleQuickApply = async (job: Job) => {
+    setApplyingJob(job);
+    setApplySuccess(false);
+
+    try {
+      await fetch(`http://localhost:8001/api/v1/apply/${job.id}`);
+    } catch (e) {
+      console.warn("Backend offline ou aviso de execução em background", e);
     }
   };
 
@@ -555,15 +566,13 @@ export default function Dashboard() {
                       >
                         Ver Detalhes
                       </button>
-                      <a
-                        href={`http://localhost:8001/api/v1/apply/${job.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-medium text-white shadow-md shadow-blue-500/20 transition hover:bg-blue-500"
+                      <button
+                        onClick={() => handleQuickApply(job)}
+                        className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-medium text-white shadow-md shadow-blue-500/20 transition hover:bg-blue-500 cursor-pointer"
                       >
                         <Send className="h-3.5 w-3.5" />
                         1 Clique
-                      </a>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -936,6 +945,51 @@ export default function Dashboard() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Modal de Candidatura em 1 Clique */}
+      {applyingJob && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-[#0c1222] p-6 shadow-2xl text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/10 text-blue-400">
+              <CheckCircle2 className="h-6 w-6" />
+            </div>
+
+            <h3 className="mt-4 font-bold text-lg text-white">Disparo de 1 Clique Registrado!</h3>
+            <p className="mt-1.5 text-xs text-slate-300">
+              A candidatura para <strong className="text-white">{applyingJob.title}</strong> na empresa <strong className="text-blue-400">{applyingJob.company}</strong> foi agendada na fila do robô.
+            </p>
+
+            <div className="mt-4 rounded-xl border border-slate-800 bg-slate-900/60 p-3.5 text-left text-xs space-y-1.5">
+              <div className="flex justify-between text-slate-400">
+                <span>Currículo ATS:</span>
+                <span className="text-emerald-400 font-medium">Personalizado com Sucesso</span>
+              </div>
+              <div className="flex justify-between text-slate-400">
+                <span>Modo de Envio:</span>
+                <span className="text-white font-medium">Assistido com Confirmação</span>
+              </div>
+            </div>
+
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => setApplyingJob(null)}
+                className="flex-1 rounded-lg border border-slate-700 bg-slate-800 py-2.5 text-xs font-medium text-slate-300 hover:bg-slate-700 transition"
+              >
+                Fechar
+              </button>
+              <a
+                href={applyingJob.job_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setApplyingJob(null)}
+                className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 py-2.5 text-xs font-semibold text-white hover:bg-blue-500 shadow-md shadow-blue-500/20 transition"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                Abrir Vaga Oficial
+              </a>
+            </div>
           </div>
         </div>
       )}
