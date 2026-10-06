@@ -94,6 +94,8 @@ export default function Dashboard() {
   const [matches, setMatches] = useState<Record<number, JobMatch>>(INITIAL_MATCHES);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [search, setSearch] = useState("");
+  const [workplaceFilter, setWorkplaceFilter] = useState<string>("ALL");
+  const [minScoreFilter, setMinScoreFilter] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
 
   // Busca vagas em tempo real da API
@@ -121,11 +123,20 @@ export default function Dashboard() {
     loadData();
   }, []);
 
-  const filteredJobs = jobs.filter(
-    (j) =>
+  const filteredJobs = jobs.filter((j) => {
+    const matchesSearch =
       j.title.toLowerCase().includes(search.toLowerCase()) ||
-      j.company.toLowerCase().includes(search.toLowerCase())
-  );
+      j.company.toLowerCase().includes(search.toLowerCase());
+
+    const matchesWorkplace =
+      workplaceFilter === "ALL" ||
+      (j.workplace_type && j.workplace_type.toLowerCase() === workplaceFilter.toLowerCase());
+
+    const jobScore = matches[j.id]?.score ?? 0;
+    const matchesScore = jobScore >= minScoreFilter;
+
+    return matchesSearch && matchesWorkplace && matchesScore;
+  });
 
   return (
     <div className="flex min-h-screen bg-[#090d16] text-slate-100">
@@ -202,6 +213,31 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="flex items-center gap-3">
+              {/* Filtro por Modalidade */}
+              <select
+                value={workplaceFilter}
+                onChange={(e) => setWorkplaceFilter(e.target.value)}
+                className="h-9 rounded-lg border border-slate-800 bg-slate-900/80 px-3 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+              >
+                <option value="ALL">Todas Modalidades</option>
+                <option value="Remoto">Apenas Remoto</option>
+                <option value="Híbrido">Apenas Híbrido</option>
+                <option value="Presencial">Apenas Presencial</option>
+              </select>
+
+              {/* Filtro por Match Mínimo */}
+              <select
+                value={minScoreFilter}
+                onChange={(e) => setMinScoreFilter(Number(e.target.value))}
+                className="h-9 rounded-lg border border-slate-800 bg-slate-900/80 px-3 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+              >
+                <option value={0}>Qualquer Match</option>
+                <option value={70}>Match &gt;= 70%</option>
+                <option value={80}>Match &gt;= 80% (Alto)</option>
+                <option value={85}>Match &gt;= 85% (Perfeito)</option>
+              </select>
+
+              {/* Busca por texto */}
               <div className="relative">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                 <input
@@ -209,7 +245,7 @@ export default function Dashboard() {
                   placeholder="Buscar cargo ou empresa..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="h-9 w-64 rounded-lg border border-slate-800 bg-slate-900/80 pl-9 pr-4 text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                  className="h-9 w-56 rounded-lg border border-slate-800 bg-slate-900/80 pl-9 pr-4 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                 />
               </div>
             </div>
