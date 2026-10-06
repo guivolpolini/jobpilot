@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      color: #1a1a1a;
+      line-height: 1.5;
+      padding: 32px;
+      font-size: 13px;
+    }
+    .header {
+      border-bottom: 2px solid #2563eb;
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+    }
+    .name {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0f172a;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .contacts {
+      margin-top: 6px;
+      font-size: 11.5px;
+      color: #475569;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .section-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #1e293b;
+      border-bottom: 1px solid #cbd5e1;
+      padding-bottom: 4px;
+      margin-top: 18px;
+      margin-bottom: 10px;
+    }
+    .summary-text {
+      color: #334155;
+      text-align: justify;
+    }
+    .skills-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .skill-badge {
+      background: #f1f5f9;
+      color: #1e293b;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 11px;
+      border: 1px solid #e2e8f0;
+    }
+    .item-block {
+      margin-bottom: 12px;
+    }
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      color: #0f172a;
+    }
+    .item-sub {
+      color: #2563eb;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    .item-list {
+      padding-left: 18px;
+      color: #334155;
+    }
+    .item-list li {
+      margin-bottom: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="name">{{ resume.full_name }}</div>
+    <div class="contacts">
+      {% if resume.email %}<span>✉ {{ resume.email }}</span>{% endif %}
+      {% if resume.phone %}<span>📞 {{ resume.phone }}</span>{% endif %}
+      {% if resume.linkedin_url %}<span>🌐 {{ resume.linkedin_url }}</span>{% endif %}
+      {% if resume.github_url %}<span>💻 {{ resume.github_url }}</span>{% endif %}
+    </div>
+  </div>
+
+  <div class="section-title">Resumo Profissional</div>
+  <p class="summary-text">{{ resume.professional_summary }}</p>
+
+  <div class="section-title">Competências Técnicas</div>
+  <div class="skills-grid">
+    {% for skill in resume.highlighted_skills %}
+      <span class="skill-badge">{{ skill }}</span>
+    {% endfor %}
+  </div>
+
+  <div class="section-title">Experiência Profissional</div>
+  {% for exp in resume.experiences %}
+  <div class="item-block">
+    <div class="item-header">
+      <span>{{ exp.role }}</span>
+      <span>{{ exp.period }}</span>
+    </div>
+    <div class="item-sub">{{ exp.company }}</div>
+    <ul class="item-list">
+      {% for ach in exp.achievements %}
+        <li>{{ ach }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+
+  {% if resume.education %}
+  <div class="section-title">Formação Acadêmica</div>
+  {% for edu in resume.education %}
+  <div class="item-block">
+    <div class="item-header">
+      <span>{{ edu.degree }}</span>
+      <span>{{ edu.year }}</span>
+    </div>
+    <div class="item-sub">{{ edu.institution }}</div>
+  </div>
+  {% endfor %}
+  {% endif %}
+</body>
+</html>
