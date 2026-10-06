@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Briefcase, 
   CheckCircle2, 
@@ -13,9 +13,11 @@ import {
   Search,
   Building,
   MapPin,
-  X
+  X,
+  RefreshCw
 } from "lucide-react";
 import { Job, JobMatch } from "@/types";
+import { fetchJobs, fetchJobMatches } from "@/lib/api";
 
 // Dados para inicialização e demonstração da interface visual
 const INITIAL_JOBS: Job[] = [
@@ -87,10 +89,36 @@ const INITIAL_MATCHES: Record<number, JobMatch> = {
 };
 
 export default function Dashboard() {
-  const [jobs] = useState<Job[]>(INITIAL_JOBS);
-  const [matches] = useState<Record<number, JobMatch>>(INITIAL_MATCHES);
+  const [jobs, setJobs] = useState<Job[]>(INITIAL_JOBS);
+  const [matches, setMatches] = useState<Record<number, JobMatch>>(INITIAL_MATCHES);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Busca vagas em tempo real da API
+  const loadData = async () => {
+    setIsLoading(true);
+    const backendJobs = await fetchJobs();
+    if (backendJobs && backendJobs.length > 0) {
+      setJobs(backendJobs);
+      // Para cada vaga, busca o match correspondente
+      const newMatches: Record<number, JobMatch> = {};
+      for (const j of backendJobs) {
+        const jMatches = await fetchJobMatches(j.id);
+        if (jMatches && jMatches.length > 0) {
+          newMatches[j.id] = jMatches[0];
+        }
+      }
+      if (Object.keys(newMatches).length > 0) {
+        setMatches(newMatches);
+      }
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const filteredJobs = jobs.filter(
     (j) =>
