@@ -5,7 +5,7 @@
   <style>
     @page {
       size: A4;
-      margin: 12mm 15mm;
+      margin: 9mm 12mm;
     }
     * {
       box-sizing: border-box;
@@ -15,32 +15,32 @@
     }
     body {
       color: #111827;
-      line-height: 1.35;
-      font-size: 10.5pt;
+      line-height: 1.28;
+      font-size: 9.5pt;
       background: #ffffff;
     }
     /* 1. CABEÇALHO */
     .header {
       text-align: center;
-      margin-bottom: 10px;
-      padding-bottom: 6px;
+      margin-bottom: 5px;
+      padding-bottom: 4px;
       border-bottom: 1.5px solid #111827;
     }
     .header h1 {
-      font-size: 17pt;
+      font-size: 15pt;
       font-weight: bold;
       color: #000000;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
     .header-contacts {
-      font-size: 9.5pt;
+      font-size: 9pt;
       color: #374151;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 6px;
+      gap: 5px;
     }
     .header-contacts a {
       color: #1d4ed8;
@@ -49,31 +49,31 @@
 
     /* TÍTULOS DE SEÇÃO EM CAIXA ALTA */
     .section-title {
-      font-size: 11pt;
+      font-size: 9.8pt;
       font-weight: bold;
       color: #000000;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       border-bottom: 1px solid #9ca3af;
-      padding-bottom: 2px;
-      margin-top: 9px;
-      margin-bottom: 4px;
+      padding-bottom: 1px;
+      margin-top: 6px;
+      margin-bottom: 3px;
     }
 
     /* CONTEÚDO */
     .section-text {
-      font-size: 10pt;
+      font-size: 9pt;
       color: #1f2937;
       text-align: justify;
     }
 
     /* HABILIDADES TÉCNICAS */
     .skills-list {
-      font-size: 9.5pt;
+      font-size: 9pt;
       color: #1f2937;
     }
     .skill-category {
-      margin-bottom: 2px;
+      margin-bottom: 1.5px;
     }
     .skill-label {
       font-weight: bold;
@@ -82,40 +82,35 @@
 
     /* PROJETOS E EXPERIÊNCIAS */
     .item-entry {
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     .item-line-top {
       display: flex;
       justify-content: space-between;
-      font-size: 10pt;
+      font-size: 9.2pt;
       font-weight: bold;
       color: #111827;
     }
-    .item-meta {
-      font-size: 9pt;
-      color: #4b5563;
-      margin-bottom: 2px;
-    }
-    .item-meta a {
+    .item-line-top a {
       color: #1d4ed8;
       text-decoration: none;
     }
     ul.bullet-list {
-      padding-left: 16px;
-      margin-top: 2px;
+      padding-left: 15px;
+      margin-top: 1px;
     }
     ul.bullet-list li {
-      font-size: 9.5pt;
+      font-size: 8.8pt;
       color: #374151;
-      margin-bottom: 2px;
-      line-height: 1.3;
+      margin-bottom: 1.5px;
+      line-height: 1.25;
     }
 
     /* FORMAÇÃO, CERTIFICAÇÕES E IDIOMAS */
     .simple-line {
-      font-size: 9.5pt;
+      font-size: 8.8pt;
       color: #1f2937;
-      margin-bottom: 2px;
+      margin-bottom: 1.5px;
     }
   </style>
 </head>
@@ -161,13 +156,13 @@
     </div>
   </div>
 
-  <!-- 5. PROJETOS: 3 a 4 projetos -->
+  <!-- 5. PROJETOS: 3 projetos relevantes -->
   <div class="section-title">PROJETOS</div>
   {% for proj in resume.projects %}
   <div class="item-entry">
     <div class="item-line-top">
       <span>{{ proj.name }} | {{ proj.stack }}</span>
-      {% if proj.url %}<span style="font-weight: normal; font-size: 8.5pt;"><a href="{{ proj.url }}" target="_blank">Ver Código</a></span>{% endif %}
+      {% if proj.url %}<span style="font-weight: normal; font-size: 8.5pt;"><a href="{{ proj.url }}" target="_blank">GitHub</a></span>{% endif %}
     </div>
     <ul class="bullet-list">
       {% for b in proj.bullets %}
@@ -183,7 +178,7 @@
   <div class="item-entry">
     <div class="item-line-top">
       <span>{{ exp.role }} | {{ exp.location }}</span>
-      <span style="font-weight: normal; font-size: 9pt;">{{ exp.period }}</span>
+      <span style="font-weight: normal; font-size: 8.5pt;">{{ exp.period }}</span>
     </div>
     <ul class="bullet-list">
       {% for b in exp.bullets %}

@@ -24,7 +24,7 @@ async def render_resume_to_pdf_bytes(resume_data: Any) -> bytes:
         await page.set_content(html_content, wait_until="networkidle")
         pdf_bytes = await page.pdf(
             format="A4",
-            margin={"top": "15mm", "bottom": "15mm", "left": "15mm", "right": "15mm"},
+            margin={"top": "8mm", "bottom": "8mm", "left": "10mm", "right": "10mm"},
             print_background=True
         )
         await browser.close()

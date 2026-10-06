@@ -191,7 +191,17 @@ async def download_resume_pdf(
     )
 
     pdf_bytes = await render_resume_to_pdf_bytes(tailored_resume)
-    filename = f"curriculo_ats_job_{job_id}.pdf"
+
+    # Nome personalizado e limpo para o download (ex: curriculo_guilherme_uber.pdf)
+    import re
+    import unicodedata
+    def sanitize(text: str) -> str:
+        nfkd = unicodedata.normalize('NFKD', text).encode('ASCII', 'ignore').decode('utf-8')
+        return re.sub(r'[^a-zA-Z0-9]', '', nfkd).lower()
+
+    first_name = sanitize(candidate.full_name.split()[0]) if candidate.full_name else "guilherme"
+    company_name = sanitize(job.company) if (job and job.company) else "tech"
+    filename = f"curriculo_{first_name}_{company_name}.pdf"
 
     return Response(
         content=pdf_bytes,
