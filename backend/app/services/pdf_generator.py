@@ -1,15 +1,16 @@
 import os
 import asyncio
+from typing import Any
 from jinja2 import Environment, FileSystemLoader
 from playwright.async_api import async_playwright
-from app.services.resume_optimizer import TailoredResumeContent
+from app.services.resume_optimizer import StandardATSResumeContent
 from app.services.storage import get_storage_service
 
 TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
 jinja_env = Environment(loader=FileSystemLoader(TEMPLATES_DIR), autoescape=True)
 
 
-async def render_resume_to_pdf_bytes(resume_data: TailoredResumeContent) -> bytes:
+async def render_resume_to_pdf_bytes(resume_data: Any) -> bytes:
     """
     Renderiza o template HTML via Jinja2 e compila em PDF de alta fidelidade
     usando Playwright headless (perfeito para leitura e parsing de robôs ATS).
@@ -31,7 +32,7 @@ async def render_resume_to_pdf_bytes(resume_data: TailoredResumeContent) -> byte
 
 
 def generate_and_save_tailored_pdf(
-    resume_data: TailoredResumeContent,
+    resume_data: Any,
     job_id: int,
     candidate_id: int
 ) -> str:

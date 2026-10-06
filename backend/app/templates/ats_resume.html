@@ -3,166 +3,219 @@
 <head>
   <meta charset="UTF-8">
   <style>
+    @page {
+      size: A4;
+      margin: 12mm 15mm;
+    }
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
     }
     body {
-      color: #0f172a;
-      line-height: 1.45;
-      padding: 28px 32px;
-      font-size: 12.5px;
+      color: #111827;
+      line-height: 1.35;
+      font-size: 10.5pt;
+      background: #ffffff;
     }
+    /* 1. CABEÇALHO */
     .header {
-      border-bottom: 2px solid #1e40af;
-      padding-bottom: 12px;
-      margin-bottom: 16px;
+      text-align: center;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1.5px solid #111827;
     }
-    .name {
-      font-size: 23px;
-      font-weight: 700;
-      color: #0f172a;
+    .header h1 {
+      font-size: 17pt;
+      font-weight: bold;
+      color: #000000;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-    }
-    .contacts {
-      margin-top: 6px;
-      font-size: 11px;
-      color: #334155;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-    }
-    .contacts a, .contacts span {
-      color: #334155;
-      text-decoration: none;
-    }
-    .section-title {
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: #1e3a8a;
-      border-bottom: 1.5px solid #cbd5e1;
-      padding-bottom: 3px;
-      margin-top: 15px;
-      margin-bottom: 8px;
-    }
-    .summary-text {
-      color: #334155;
-      text-align: justify;
-      line-height: 1.5;
-    }
-    .skills-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-    }
-    .skill-badge {
-      background: #f1f5f9;
-      color: #1e293b;
-      padding: 2.5px 7px;
-      border-radius: 3px;
-      font-weight: 600;
-      font-size: 10.5px;
-      border: 1px solid #cbd5e1;
-    }
-    .item-block {
-      margin-bottom: 10px;
-    }
-    .item-header {
-      display: flex;
-      justify-content: space-between;
-      font-weight: 700;
-      color: #0f172a;
-      font-size: 12.5px;
-    }
-    .item-sub {
-      color: #2563eb;
-      font-weight: 600;
-      font-size: 11.5px;
       margin-bottom: 3px;
     }
-    .item-techs {
-      font-size: 11px;
-      color: #475569;
+    .header-contacts {
+      font-size: 9.5pt;
+      color: #374151;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+    }
+    .header-contacts a {
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+
+    /* TÍTULOS DE SEÇÃO EM CAIXA ALTA */
+    .section-title {
+      font-size: 11pt;
+      font-weight: bold;
+      color: #000000;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #9ca3af;
+      padding-bottom: 2px;
+      margin-top: 9px;
       margin-bottom: 4px;
-      font-style: italic;
     }
-    .item-list {
-      padding-left: 18px;
-      color: #334155;
+
+    /* CONTEÚDO */
+    .section-text {
+      font-size: 10pt;
+      color: #1f2937;
+      text-align: justify;
     }
-    .item-list li {
+
+    /* HABILIDADES TÉCNICAS */
+    .skills-list {
+      font-size: 9.5pt;
+      color: #1f2937;
+    }
+    .skill-category {
       margin-bottom: 2px;
-      line-height: 1.4;
+    }
+    .skill-label {
+      font-weight: bold;
+      color: #111827;
+    }
+
+    /* PROJETOS E EXPERIÊNCIAS */
+    .item-entry {
+      margin-bottom: 6px;
+    }
+    .item-line-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10pt;
+      font-weight: bold;
+      color: #111827;
+    }
+    .item-meta {
+      font-size: 9pt;
+      color: #4b5563;
+      margin-bottom: 2px;
+    }
+    .item-meta a {
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+    ul.bullet-list {
+      padding-left: 16px;
+      margin-top: 2px;
+    }
+    ul.bullet-list li {
+      font-size: 9.5pt;
+      color: #374151;
+      margin-bottom: 2px;
+      line-height: 1.3;
+    }
+
+    /* FORMAÇÃO, CERTIFICAÇÕES E IDIOMAS */
+    .simple-line {
+      font-size: 9.5pt;
+      color: #1f2937;
+      margin-bottom: 2px;
     }
   </style>
 </head>
 <body>
+
+  <!-- 1. CABEÇALHO: Nome | Cidade-UF | E-mail | Telefone | LinkedIn | GitHub -->
   <div class="header">
-    <div class="name">{{ resume.full_name }}</div>
-    <div class="contacts">
-      {% if resume.email %}<span>✉ {{ resume.email }}</span>{% endif %}
-      {% if resume.phone %}<span>📞 {{ resume.phone }}</span>{% endif %}
-      {% if resume.linkedin_url %}<span>🌐 {{ resume.linkedin_url }}</span>{% endif %}
-      {% if resume.github_url %}<span>💻 {{ resume.github_url }}</span>{% endif %}
+    <h1>{{ resume.full_name }}</h1>
+    <div class="header-contacts">
+      <span>{{ resume.location }}</span> |
+      <span>{{ resume.email }}</span> |
+      <span>{{ resume.phone }}</span> |
+      <span><a href="{{ resume.linkedin_url }}" target="_blank">LinkedIn</a></span> |
+      <span><a href="{{ resume.github_url }}" target="_blank">GitHub</a></span>
     </div>
   </div>
 
-  <div class="section-title">Resumo Profissional</div>
-  <p class="summary-text">{{ resume.professional_summary }}</p>
+  <!-- 2. OBJETIVO: 1 linha com cargo-alvo e foco -->
+  <div class="section-title">OBJETIVO</div>
+  <p class="section-text" style="font-weight: 500;">{{ resume.objective }}</p>
 
-  <div class="section-title">Competências Técnicas & Ferramentas</div>
-  <div class="skills-grid">
-    {% for skill in resume.highlighted_skills %}
-      <span class="skill-badge">{{ skill }}</span>
-    {% endfor %}
+  <!-- 3. RESUMO: 2 a 3 linhas, direto, sem clichês -->
+  <div class="section-title">RESUMO</div>
+  <p class="section-text">{{ resume.summary }}</p>
+
+  <!-- 4. HABILIDADES TÉCNICAS: agrupadas por categoria -->
+  <div class="section-title">HABILIDADES TÉCNICAS</div>
+  <div class="skills-list">
+    <div class="skill-category">
+      <span class="skill-label">Linguagens:</span> {{ resume.technical_skills.languages | join(', ') }}
+    </div>
+    <div class="skill-category">
+      <span class="skill-label">Frameworks/Bibliotecas:</span> {{ resume.technical_skills.frameworks | join(', ') }}
+    </div>
+    <div class="skill-category">
+      <span class="skill-label">Banco de dados:</span> {{ resume.technical_skills.databases | join(', ') }}
+    </div>
+    <div class="skill-category">
+      <span class="skill-label">Cloud/DevOps/Ferramentas:</span> {{ resume.technical_skills.tools | join(', ') }}
+    </div>
+    <div class="skill-category">
+      <span class="skill-label">Metodologias:</span> {{ resume.technical_skills.methodologies | join(', ') }}
+    </div>
   </div>
 
-  {% if resume.projects %}
-  <div class="section-title">Projetos em Destaque no GitHub & Portfólio</div>
+  <!-- 5. PROJETOS: 3 a 4 projetos -->
+  <div class="section-title">PROJETOS</div>
   {% for proj in resume.projects %}
-  <div class="item-block">
-    <div class="item-header">
-      <span>{{ proj.name }}</span>
-      {% if proj.url %}<span style="font-weight: normal; font-size: 11px; color: #2563eb;">{{ proj.url }}</span>{% endif %}
+  <div class="item-entry">
+    <div class="item-line-top">
+      <span>{{ proj.name }} | {{ proj.stack }}</span>
+      {% if proj.url %}<span style="font-weight: normal; font-size: 8.5pt;"><a href="{{ proj.url }}" target="_blank">Ver Código</a></span>{% endif %}
     </div>
-    {% if proj.technologies %}<div class="item-techs">Stack: {{ proj.technologies }}</div>{% endif %}
-    <p class="summary-text" style="font-size: 12px;">{{ proj.description }}</p>
-  </div>
-  {% endfor %}
-  {% endif %}
-
-  <div class="section-title">Experiência Profissional & Prática</div>
-  {% for exp in resume.experiences %}
-  <div class="item-block">
-    <div class="item-header">
-      <span>{{ exp.role }}</span>
-      <span>{{ exp.period }}</span>
-    </div>
-    <div class="item-sub">{{ exp.company }}</div>
-    <ul class="item-list">
-      {% for ach in exp.achievements %}
-        <li>{{ ach }}</li>
+    <ul class="bullet-list">
+      {% for b in proj.bullets %}
+        <li>{{ b }}</li>
       {% endfor %}
     </ul>
   </div>
   {% endfor %}
 
-  {% if resume.education %}
-  <div class="section-title">Formação Acadêmica & Certificações</div>
-  {% for edu in resume.education %}
-  <div class="item-block">
-    <div class="item-header">
-      <span>{{ edu.degree }}</span>
-      <span>{{ edu.year }}</span>
+  <!-- 6. EXPERIÊNCIA: (freelance incluso) Cargo/Atividade | Local | período -->
+  <div class="section-title">EXPERIÊNCIA</div>
+  {% for exp in resume.experiences %}
+  <div class="item-entry">
+    <div class="item-line-top">
+      <span>{{ exp.role }} | {{ exp.location }}</span>
+      <span style="font-weight: normal; font-size: 9pt;">{{ exp.period }}</span>
     </div>
-    <div class="item-sub">{{ edu.institution }}</div>
+    <ul class="bullet-list">
+      {% for b in exp.bullets %}
+        <li>{{ b }}</li>
+      {% endfor %}
+    </ul>
   </div>
   {% endfor %}
-  {% endif %}
+
+  <!-- 7. FORMAÇÃO: Curso | Instituição | previsão de conclusão -->
+  <div class="section-title">FORMAÇÃO</div>
+  {% for edu in resume.education %}
+  <div class="simple-line">
+    <strong>{{ edu.course }}</strong> | {{ edu.institution }} | {{ edu.graduation_date }}
+  </div>
+  {% endfor %}
+
+  <!-- 8. CERTIFICAÇÕES E CURSOS: nome | instituição | ano -->
+  <div class="section-title">CERTIFICAÇÕES E CURSOS</div>
+  {% for cert in resume.certifications %}
+  <div class="simple-line">
+    {{ cert.name }} | {{ cert.institution }} | {{ cert.year }}
+  </div>
+  {% endfor %}
+
+  <!-- 9. IDIOMAS: idioma, nível -->
+  <div class="section-title">IDIOMAS</div>
+  <div class="simple-line">
+    {% for lang in resume.languages %}
+      {{ lang.language }}: {{ lang.level }}{% if not loop.last %} | {% endif %}
+    {% endfor %}
+  </div>
+
 </body>
 </html>
