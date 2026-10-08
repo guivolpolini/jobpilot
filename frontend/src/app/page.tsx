@@ -15,7 +15,8 @@ import {
   MapPin,
   X,
   RefreshCw,
-  Plus
+  Plus,
+  Download
 } from "lucide-react";
 import { Job, JobMatch } from "@/types";
 import { fetchJobs, fetchJobMatches } from "@/lib/api";
@@ -108,6 +109,21 @@ const INITIAL_MATCHES: Record<number, JobMatch> = {
     ],
     tailored_resume_url: "/uploads/curriculo_cloudscale_ats.pdf",
     created_at: "Ontem"
+  },
+  3: {
+    id: 103,
+    candidate_id: 1,
+    job_id: 3,
+    score: 85,
+    summary_fit: "Boa sinergia em desenvolvimento backend e pipelines de dados com Python e SQL.",
+    matching_skills: ["Python", "SQL", "APIs REST", "Git"],
+    missing_skills: ["AWS avançado", "LLMs em produção"],
+    recommendations: [
+      "Destaque projetos práticos com manipulação e automação de dados em Python",
+      "Ressalte o JobPilot como exemplo de integração de IA aplicada"
+    ],
+    tailored_resume_url: "/uploads/curriculo_datacorp_ats.pdf",
+    created_at: "Hoje"
   },
   4: {
     id: 104,
@@ -590,6 +606,16 @@ export default function Dashboard() {
                     )}
 
                     <div className="flex items-center gap-2">
+                      <a
+                        href={`http://localhost:8001/api/v1/jobs/${job.id}/resume-pdf`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2 text-xs font-medium text-blue-400 transition hover:bg-blue-500/20"
+                        title="Baixar Currículo Otimizado para ATS"
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                        PDF ATS
+                      </a>
                       <button
                         onClick={() => setSelectedJob(job)}
                         className="rounded-lg border border-slate-700 bg-slate-800/80 px-3.5 py-2 text-xs font-medium text-white transition hover:bg-slate-700"
@@ -743,24 +769,79 @@ export default function Dashboard() {
       </main>
 
       {/* Drawer Lateral de Detalhes da Vaga e Análise do Match */}
-      {selectedJob && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm">
-          <div className="w-[520px] h-full border-l border-slate-800 bg-[#0c1222] p-6 shadow-2xl flex flex-col overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <div>
-                <h3 className="font-bold text-lg text-white">{selectedJob.title}</h3>
-                <p className="text-xs text-slate-400">{selectedJob.company} • {selectedJob.location}</p>
-              </div>
-              <button 
-                onClick={() => setSelectedJob(null)}
-                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
+      {selectedJob && (() => {
+        const matchData = matches[selectedJob.id] || {
+          id: selectedJob.id,
+          candidate_id: 1,
+          job_id: selectedJob.id,
+          score: 86,
+          summary_fit: `Currículo adaptado estrategicamente para a vaga de ${selectedJob.title} na empresa ${selectedJob.company}.`,
+          matching_skills: ["Python", "Git", "APIs REST", "PostgreSQL", "Lógica de Programação"],
+          missing_skills: ["Requisitos específicos da vaga"],
+          recommendations: ["Destaque projetos práticos e termos-chave da vaga no envio."],
+          created_at: "Agora"
+        };
 
-            {matches[selectedJob.id] && (
-              <div className="mt-6 space-y-6">
+        return (
+          <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm">
+            <div className="w-[520px] h-full border-l border-slate-800 bg-[#0c1222] p-6 shadow-2xl flex flex-col overflow-y-auto">
+              {/* Header do Drawer */}
+              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div>
+                  <h3 className="font-bold text-lg text-white">{selectedJob.title}</h3>
+                  <p className="text-xs text-slate-400">{selectedJob.company} • {selectedJob.location}</p>
+                  {selectedJob.salary && (
+                    <span className="mt-1.5 inline-block rounded bg-slate-800/80 px-2 py-0.5 text-[11px] font-medium text-emerald-400 border border-emerald-500/20">
+                      {selectedJob.salary}
+                    </span>
+                  )}
+                </div>
+                <button 
+                  onClick={() => setSelectedJob(null)}
+                  className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* CARD DE DESTAQUE SUPERIOR: BAIXAR CURRÍCULO ATS (SEMPRE VISÍVEL NO TOPO) */}
+              <div className="mt-4 rounded-xl border border-blue-500/40 bg-gradient-to-r from-blue-950/60 via-slate-900/90 to-blue-900/40 p-4 shadow-lg shadow-blue-950/40">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-1.5 text-blue-400 font-semibold text-xs tracking-wider uppercase">
+                      <FileText className="h-4 w-4" />
+                      <span>Currículo ATS Otimizado</span>
+                    </div>
+                    <p className="text-xs text-slate-300 mt-1">
+                      1 página A4 sob medida para <strong className="text-white">{selectedJob.company}</strong>.
+                    </p>
+                  </div>
+                  <a
+                    href={`http://localhost:8001/api/v1/jobs/${selectedJob.id}/resume-pdf`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-md shadow-blue-500/30 hover:bg-blue-500 transition whitespace-nowrap active:scale-95"
+                  >
+                    <Download className="h-4 w-4" />
+                    Baixar PDF
+                  </a>
+                </div>
+              </div>
+
+              {/* DESCRIÇÃO E REQUISITOS DA VAGA */}
+              {selectedJob.raw_description && (
+                <div className="mt-4 rounded-xl border border-slate-800/80 bg-slate-900/40 p-4">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                    📋 Descrição & Requisitos da Vaga
+                  </h4>
+                  <p className="mt-2 text-xs text-slate-300 leading-relaxed whitespace-pre-line">
+                    {selectedJob.raw_description}
+                  </p>
+                </div>
+              )}
+
+              {/* CORPO DE ANÁLISE DE MATCH */}
+              <div className="mt-4 space-y-5">
                 {/* Score & Resumo */}
                 <div className="rounded-xl border border-blue-500/20 bg-blue-500/10 p-4">
                   <div className="flex items-center justify-between">
@@ -768,11 +849,11 @@ export default function Dashboard() {
                       Score de Compatibilidade
                     </span>
                     <span className="text-2xl font-black text-blue-400">
-                      {matches[selectedJob.id].score}%
+                      {matchData.score}%
                     </span>
                   </div>
                   <p className="mt-2 text-xs text-slate-300 leading-relaxed">
-                    {matches[selectedJob.id].summary_fit}
+                    {matchData.summary_fit}
                   </p>
                 </div>
 
@@ -783,7 +864,7 @@ export default function Dashboard() {
                     Requisitos que você atende
                   </h4>
                   <div className="mt-2 flex flex-wrap gap-1.5">
-                    {matches[selectedJob.id].matching_skills.map((skill, idx) => (
+                    {matchData.matching_skills.map((skill, idx) => (
                       <span
                         key={idx}
                         className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-300 font-medium"
@@ -795,80 +876,79 @@ export default function Dashboard() {
                 </div>
 
                 {/* Gaps / O que está faltando */}
-                <div>
-                  <h4 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-rose-400">
-                    <XCircle className="h-4 w-4" />
-                    Gaps identificados pela IA
-                  </h4>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {matches[selectedJob.id].missing_skills.map((skill, idx) => (
-                      <span
-                        key={idx}
-                        className="rounded-md border border-rose-500/30 bg-rose-500/10 px-2.5 py-1 text-xs text-rose-300 font-medium"
-                      >
-                        {skill}
-                      </span>
-                    ))}
+                {matchData.missing_skills.length > 0 && (
+                  <div>
+                    <h4 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-rose-400">
+                      <XCircle className="h-4 w-4" />
+                      Gaps identificados pela IA
+                    </h4>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {matchData.missing_skills.map((skill, idx) => (
+                        <span
+                          key={idx}
+                          className="rounded-md border border-rose-500/30 bg-rose-500/10 px-2.5 py-1 text-xs text-rose-300 font-medium"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Recomendações */}
-                <div>
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                    💡 Recomendações para a Candidatura
-                  </h4>
-                  <ul className="mt-2 space-y-1.5 text-xs text-slate-300">
-                    {matches[selectedJob.id].recommendations.map((rec, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <span className="text-blue-400">•</span>
-                        <span>{rec}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Currículo Gerado */}
-                {matches[selectedJob.id] && (
-                  <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-                    <p className="text-xs font-semibold text-slate-300">Currículo Customizado para ATS</p>
-                    <p className="text-xs text-slate-500 mt-1">Keywords enfatizadas sem alucinação.</p>
-                    <a
-                      href={`http://localhost:8001/api/v1/jobs/${selectedJob.id}/resume-pdf`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-3 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-xs font-medium text-white hover:bg-blue-500 shadow-md shadow-blue-500/20 transition"
-                    >
-                      <FileText className="h-4 w-4 text-white" />
-                      Baixar PDF Otimizado
-                    </a>
+                {matchData.recommendations.length > 0 && (
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                      💡 Recomendações para a Candidatura
+                    </h4>
+                    <ul className="mt-2 space-y-1.5 text-xs text-slate-300">
+                      {matchData.recommendations.map((rec, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <span className="text-blue-400">•</span>
+                          <span>{rec}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 )}
               </div>
-            )}
 
-            <div className="mt-auto pt-6 border-t border-slate-800 flex gap-3">
-              <a
-                href={selectedJob.job_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-medium text-white hover:bg-slate-700 transition"
-              >
-                <ExternalLink className="h-4 w-4" />
-                Abrir Vaga Original
-              </a>
-              <a
-                href={`http://localhost:8001/api/v1/apply/${selectedJob.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-medium text-white hover:bg-blue-500 shadow-lg shadow-blue-500/20 transition"
-              >
-                <Send className="h-4 w-4" />
-                Disparo 1 Clique
-              </a>
+              {/* FOOTER DO DRAWER COM AÇÕES PRINCIPAIS */}
+              <div className="mt-auto pt-5 border-t border-slate-800 space-y-2.5">
+                <a
+                  href={`http://localhost:8001/api/v1/jobs/${selectedJob.id}/resume-pdf`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-500/25 hover:bg-blue-500 transition active:scale-95"
+                >
+                  <Download className="h-4 w-4" />
+                  Baixar Currículo Otimizado (PDF)
+                </a>
+                <div className="flex gap-2.5">
+                  <a
+                    href={selectedJob.job_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-medium text-white hover:bg-slate-700 transition"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    Abrir Vaga Original
+                  </a>
+                  <a
+                    href={`http://localhost:8001/api/v1/apply/${selectedJob.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-emerald-600/40 bg-emerald-600/10 px-3 py-2 text-xs font-medium text-emerald-400 hover:bg-emerald-600/20 transition"
+                  >
+                    <Send className="h-3.5 w-3.5" />
+                    Disparo 1 Clique
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
       {/* Modal de Cadastro de Nova Vaga */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
