@@ -81,9 +81,9 @@ async def seed_database():
                 "company": "Fintech Horizon",
                 "location": "São Paulo, SP",
                 "workplace_type": "Remoto",
-                "job_url": "https://exemplo.com/vagas/fintech-horizon-python-jr",
+                "job_url": "https://www.linkedin.com/jobs/search/?keywords=Desenvolvedor+Python+Backend+Junior+Fintech+Horizon",
                 "salary": "R$ 4.500 - R$ 6.000",
-                "source": "Greenhouse",
+                "source": "LinkedIn",
                 "raw_description": (
                     "Procuramos Desenvolvedor Python Júnior para nosso time de pagamentos. "
                     "Requisitos essenciais: Python 3, vivência com FastAPI ou Flask, bancos relacionais (PostgreSQL), "
@@ -96,9 +96,9 @@ async def seed_database():
                 "company": "DataCorp Analytics",
                 "location": "Belo Horizonte, MG",
                 "workplace_type": "Remoto",
-                "job_url": "https://exemplo.com/vagas/datacorp-dev",
+                "job_url": "https://www.linkedin.com/jobs/search/?keywords=Junior+Data+Backend+Developer+DataCorp+Analytics",
                 "salary": "R$ 4.800",
-                "source": "Manual",
+                "source": "LinkedIn",
                 "raw_description": "Experiência com pipelines de dados, Python, SQL avançado, noções de AWS e familiaridade com LLMs."
             },
             {
@@ -106,9 +106,9 @@ async def seed_database():
                 "company": "NextGen Software",
                 "location": "São Paulo, SP",
                 "workplace_type": "Remoto",
-                "job_url": "https://exemplo.com/vagas/nextgen-estagio-python",
+                "job_url": "https://www.linkedin.com/jobs/search/?keywords=Estagio+em+Desenvolvimento+Backend+Python+NextGen+Software",
                 "salary": "R$ 2.500 + Benefícios",
-                "source": "Gupy",
+                "source": "LinkedIn",
                 "raw_description": "Vaga de Estágio para estudantes de TI. Atuará com Python, FastAPI, testes unitários, consumo de APIs e Git. Ambiente focado em aprendizado acelerado."
             },
             {
@@ -116,9 +116,9 @@ async def seed_database():
                 "company": "Inovare Labs",
                 "location": "Florianópolis, SC",
                 "workplace_type": "Híbrido",
-                "job_url": "https://exemplo.com/vagas/inovare-estagio-eng",
+                "job_url": "https://www.linkedin.com/jobs/search/?keywords=Estagio+em+Engenharia+de+Software+Inovare+Labs",
                 "salary": "R$ 2.200",
-                "source": "Gupy",
+                "source": "LinkedIn",
                 "raw_description": "Oportunidade de estágio técnico. Requisitos: lógica de programação sólida, Python ou JavaScript, bancos SQL e vontade de aprender microsserviços."
             }
         ]
